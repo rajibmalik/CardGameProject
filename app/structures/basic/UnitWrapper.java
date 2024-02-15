@@ -10,31 +10,29 @@ public class UnitWrapper {
     private boolean hasMoved;
     private Player player; // Player reference to the owner of the unit
     private UnitAbility ability;
+    private final int id; // Unique identifier for each UnitWrapper, cannot be changed
+    private static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
+                                   // allowing us to keep track of the counter
 
-    // Default constructor, most rigid requiring all parameters 
-    public UnitWrapper(Unit unit, String name, int health, int attack, Player player) {
+    // Default constructor
+    public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability) {
 
         if (health < 0 || attack < 0) {
             throw new IllegalArgumentException("Health and attack values cannot be negative & Unit and Player cannot be null!");
         }
-
+        this.player = player;
         this.unit = unit;
         this.name = name;
         this.health = health;
         this.attack = attack;
         this.hasBeenClicked = false;
         this.hasMoved = false;
-        this.player = player;
+        this.id = nextId++; // id is assigned to value of nextId, then nextId incremented  
+        this.ability = ability;
     }
 
-    // Overloaded constructor, Unit reference null, this can be set later
-    public UnitWrapper(String name, int health, int attack, Player player) {
-        this(null, name, health, attack, player);
-    }
-
-    // Overloaded constructor, Player & Unit reference null, these can be set later
-    public UnitWrapper(String name, int health, int attack) {
-        this(null, name, health, attack, null);
+    public int getId() {
+        return this.id;
     }
 
     public void setHealth(int health) {
@@ -91,10 +89,6 @@ public class UnitWrapper {
 
     public String getName() {
         return this.name;
-    }
-
-    public void setAbility(UnitAbility ability) {
-        this.ability = ability;
     }
 
     public void useAbility() {
