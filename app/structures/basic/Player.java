@@ -1,5 +1,6 @@
 package structures.basic;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // A basic representation of the Player. A player has health and mana.
@@ -44,12 +45,24 @@ public class Player {
         this.hand = hand;
     }
 
+	public void addUnit(UnitWrapper unit) {
+		this.units.add(unit);
+	}
 
-    public void addUnit(ArrayList<UnitWrapper> units) {
-        this.units.add(units);
-    }
-    public void removeUnit(UnitWrapper units) {	//would need to override compareTo for this to work
-    	this.units.remove(units);	//not saying what unit to remove, will add functionality later
-    }
+    // public void removeUnit(UnitWrapper unit) {	// this should be in a controller Class
+	// 	Iterator<UnitWrapper> iterator = this.units.iterator();
+
+	// 	while (iterator.hasNext()) {
+	// 		UnitWrapper unitInstance = iterator.next();
+	// 		if (unitInstance.getId() == unit.getId()) {
+	// 			iterator.remove();
+	// 			break;
+	// 		}
+	// 	}
+    // }
+
+	public ArrayList<UnitWrapper> getUnits() {
+		return this.units;
+	}
 	
 }

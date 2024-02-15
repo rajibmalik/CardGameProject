@@ -3,7 +3,9 @@ package demo;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.basic.Card;
+import structures.basic.Deck;
 import structures.basic.EffectAnimation;
+import structures.basic.Hand;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.Unit;
@@ -164,13 +166,13 @@ public class CommandDemo {
 
 		// setPlayer1Health
 		BasicCommands.addPlayer1Notification(out, "setPlayer1Health", 2);
-		Player humanPlayer = new Player(20, 0);
+		Player humanPlayer = new Player(new Deck("Player"), new Hand()); // edited to match new models
 		BasicCommands.setPlayer1Health(out, humanPlayer);
 		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 
 		// setPlayer1Health
 		BasicCommands.addPlayer1Notification(out, "setPlayer2Health", 2);
-		Player aiPlayer = new Player(20, 0);
+		Player aiPlayer = new Player(new Deck("AI"), new Hand()); // edited to match new models
 		BasicCommands.setPlayer2Health(out, aiPlayer);
 		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 

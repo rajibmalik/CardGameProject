@@ -6,7 +6,7 @@ public class CardWrapper {
     private boolean hasBeenClicked;
     private Card card;
 
-    public CardWrapper(int manaCost, String name) {
+    public CardWrapper(int manaCost, String name, Card card) {
     	this.card = card;
         this.manaCost = manaCost;
         this.name = name;
@@ -14,7 +14,7 @@ public class CardWrapper {
     }
     
     public Card getCard() {
-        return card;
+        return this.card;
     }
 
     public void setCard(Card card) {
@@ -22,7 +22,7 @@ public class CardWrapper {
     }
 
     public int getManaCost() {
-        return manaCost;
+        return this.manaCost;
     }
 
     public void setManaCost(int manaCost) {
@@ -30,7 +30,7 @@ public class CardWrapper {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
