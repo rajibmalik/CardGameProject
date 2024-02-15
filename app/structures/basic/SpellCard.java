@@ -4,8 +4,8 @@ import abilities.SpellAbility;
 public class SpellCard extends CardWrapper {
     private SpellAbility spellAbility;
 
-    public SpellCard(String name, int manaCost, SpellAbility spellAbility) {
-        super(manaCost, name);
+    public SpellCard(String name, int manaCost, SpellAbility spellAbility, Card card) {
+        super(manaCost, name, card);
         this.spellAbility = spellAbility;
     }
 
