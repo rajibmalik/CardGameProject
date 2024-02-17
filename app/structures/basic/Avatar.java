@@ -8,7 +8,7 @@ public class Avatar extends UnitWrapper {
     private int robustness;
 
     public Avatar(Unit unit, String name, Player player, UnitAbility ability) {
-        super(unit, name, 2, 2, player, ability); // Player avatar is initialised with 2 health and attack
+        super(unit, name, 20, 2, player, ability); // Player avatar is initialised with 2 health and attack
         this.robustness = 0;
     }
 
