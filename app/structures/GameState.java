@@ -36,14 +36,7 @@ public class GameState {
 	public Deck getPlayerDeck() {
 		return playerController.getPlayerDeck();
 	}
-	public Hand getPlayerHand() {
-		return playerController.getPlayerHand();
-	}
-
-	public Hand getPlayerHand() {
-		return playerController.getPlayerHand();
-	}
-
+	
 	public Board getBoard() {
 		return board;
 	}
