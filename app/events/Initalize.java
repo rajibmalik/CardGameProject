@@ -64,7 +64,8 @@ public class Initalize implements EventProcessor{
 
 	public void renderHand(ActorRef out, GameState gameState) {
 		for (int iteration = 0; iteration < 3; iteration++) {
-			int handPosition = gameState.getPlayerDeck().getTopCardIndex() + 1;
+			int handPosition = 1;
+	
 			for (Card card : OrderedCardLoader.getPlayer1Cards(1)) {
 				BasicCommands.drawCard(out, card, handPosition, 1);
 				try {

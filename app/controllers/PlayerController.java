@@ -13,6 +13,11 @@ public class PlayerController {
     public PlayerController(Player player) {
         this.player = player;
     }
+
+    public void drawCard() {
+        CardWrapper cardWrapper = player.getDeck().getTopCard();
+        player.getHand().addCard(cardWrapper);
+    }
     
     public void drawInitialHand() {
         for (int i = 0; i < 3; i++) {
