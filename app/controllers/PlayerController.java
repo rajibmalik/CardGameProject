@@ -24,5 +24,9 @@ public class PlayerController {
     public Deck getPlayerDeck() {
         return this.player.getDeck();
     } 
+    
+    public Hand getPlayerHand() {
+        return this.player.getHand();
+    }
 
 }

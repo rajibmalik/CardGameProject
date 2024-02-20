@@ -20,4 +20,8 @@ public class Hand {
     public void removeCard(int index) { 
         hand.remove(index);
     }
+    
+    public CardWrapper getCard (int index) {
+    	return hand.get(index);
+    }
 }  

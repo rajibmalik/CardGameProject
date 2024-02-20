@@ -28,6 +28,9 @@ public class GameState {
 	public Deck getPlayerDeck() {
 		return playerController.getPlayerDeck();
 	}
+	public Hand getPlayerHand() {
+		return playerController.getPlayerHand();
+	}
 
 	
 	public boolean gameInitalised = false;

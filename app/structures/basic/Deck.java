@@ -28,7 +28,8 @@ public class Deck{
 
     public void createDeck(String deckNumber) {
         // Specifies the directory containing JSON files of the cards
-        String cardConfigPath = "conf\\gameconfs\\cards";
+    	String cardConfigPath = "conf/gameconfs/cards";
+
 
         // Creates an ObjectMapper to parse JSON files
         ObjectMapper objectMapper = new ObjectMapper();
