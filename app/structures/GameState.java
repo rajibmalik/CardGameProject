@@ -3,10 +3,12 @@ package structures;
 import java.util.ArrayList;
 
 import controllers.PlayerController;
+import structures.basic.Board;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
+import utils.BoardHighlighter;
 
 /**
  * This class can be used to hold information about the on-going game.
@@ -20,9 +22,15 @@ public class GameState {
 	Hand playerHand = new Hand();
 	Player humanPlayer = new Player(playerDeck, playerHand);
 	PlayerController playerController = new PlayerController(humanPlayer);
+	Board board = new Board();
+	// BoardHighlighter boardHighlighter = new BoardHighlighter(board);
 
 	public void initializeGame() {
 		playerController.drawInitialHand();
+	}
+
+	public void playerDrawCard() {
+		playerController.drawCard();
 	}
 
 	public Deck getPlayerDeck() {
@@ -32,7 +40,19 @@ public class GameState {
 		return playerController.getPlayerHand();
 	}
 
-	
-	public boolean gameInitalised = false;
-	public boolean something = false;
+	public Hand getPlayerHand() {
+		return playerController.getPlayerHand();
+	}
+
+	public Board getBoard() {
+		return board;
+	}
+
+	public Player getPlayer() {
+		return this.humanPlayer;
+	}
+
+	// public void highlightBoard() {
+	// 	boardHighlighter.setBoardToHighlight();
+	// }
 }

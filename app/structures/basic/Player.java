@@ -3,14 +3,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 // A basic representation of the Player. A player has health and mana.
  
 public class Player {
 
 	private int health;
 	private int mana;
+	@JsonIgnore
 	private Deck deck;
+	@JsonIgnore
 	private Hand hand;
+	@JsonIgnore
 	private ArrayList<UnitWrapper> units;
 	
 	public Player(Deck deck, Hand hand) {
