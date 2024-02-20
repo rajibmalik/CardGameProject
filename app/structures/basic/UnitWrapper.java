@@ -8,6 +8,7 @@ public class UnitWrapper {
     private int attack;
     private boolean hasBeenClicked;
     private boolean hasMoved;
+    private boolean hasAttacked;
     private Player player; // Player reference to the owner of the unit
     private UnitAbility ability;
     private final int id; // Unique identifier for each UnitWrapper, cannot be changed
@@ -27,6 +28,7 @@ public class UnitWrapper {
         this.attack = attack;
         this.hasBeenClicked = false;
         this.hasMoved = false;
+        this.hasAttacked = false;
         this.id = nextId++; // id is assigned to value of nextId, then nextId incremented  
         this.ability = ability;
     }
@@ -106,5 +108,14 @@ public class UnitWrapper {
     public boolean getHasMoved() {
         return this.hasMoved;
     }
+    
+    public void setHasAttacked(Boolean attacked) {
+        this.hasAttacked = attacked;
+    }
+
+    public boolean getHasAttacked() {
+        return this.hasAttacked;
+    }
+
 
 }
