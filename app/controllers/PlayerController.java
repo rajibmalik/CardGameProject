@@ -21,7 +21,7 @@ public class PlayerController {
         CardWrapper cardWrapper = player.getDeck().getTopCard();
         player.getHand().addCard(cardWrapper);
     }
-    
+
     public void drawInitialHand() {
         for (int i = 0; i < 3; i++) {
             CardWrapper cardWrapper = player.getDeck().getTopCard();
@@ -57,6 +57,10 @@ public class PlayerController {
     
     public Hand getPlayerHand() {
         return this.player.getHand();
+    }
+
+    public int getTurn() {
+        return this.turn;
     }
 
 }
