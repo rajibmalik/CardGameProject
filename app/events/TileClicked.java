@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
 import structures.GameState;
+import structures.basic.CardWrapper;
+import structures.basic.Hand;
 
 /**
  * Indicates that the user has clicked an object on the game canvas, in this case a tile.
@@ -27,9 +29,21 @@ public class TileClicked implements EventProcessor{
 
 		int tilex = message.get("tilex").asInt();
 		int tiley = message.get("tiley").asInt();
+	
 		
-		if (gameState.something == true) {
-			// do some logic
+		Hand playerHand = gameState.getPlayerHand();
+		
+		for (CardWrapper card : playerHand.getHand()) {
+			
+			if(card.hasBeenClicked()==true) {
+				
+				if(card.getManaCost()<= gameState.getCurrentPlayer().getMana()) {
+					//perform card action
+					//remove card from hand
+				}
+	
+			}
+		
 		}
 		
 	}

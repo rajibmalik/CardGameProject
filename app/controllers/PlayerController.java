@@ -9,9 +9,12 @@ import structures.basic.Player;
 
 public class PlayerController {
     Player player;
+    private int turn; 
+    private static final int MAX_MANA = 9; // Maximum mana value
 
     public PlayerController(Player player) {
         this.player = player;
+        this.turn=1;
     }
 
     public void drawCard() {
@@ -24,6 +27,28 @@ public class PlayerController {
             CardWrapper cardWrapper = player.getDeck().getTopCard();
             player.getHand().addCard(cardWrapper);
         }
+    }
+    public void setTurnMana() {
+        
+        int calculatedMana = 1 + turn;
+        
+        if (calculatedMana > MAX_MANA) {
+            player.setMana(MAX_MANA);
+        } else {
+            player.setMana(calculatedMana);
+        }
+    }
+    
+    public void clearMana() {
+    	player.setMana(0);
+    }
+    public void getMana() {
+    	player.getMana();
+    }
+    
+    public void nextTurn() {
+        turn++;
+        setTurnMana();
     }
 
     public Deck getPlayerDeck() {

@@ -8,7 +8,8 @@ public class TileWrapper {
 	private int xpos; 
 	private int ypos;
 	
-	public TileWrapper(int xpos, int ypos) {
+	public TileWrapper(Tile tile, int xpos, int ypos) {
+		this.tile=tile;
 		this.xpos = xpos;
 		this.ypos = ypos;
 		this.hasUnit = false;
