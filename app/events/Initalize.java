@@ -42,7 +42,6 @@ public class Initalize implements EventProcessor{
 
 		Unit  aiAvatar = setAiAvatarFrontend(out, gameState);
 		Player aiPlayer = setAiAvatarBackend(gameState, aiAvatar);
-		setAIHealthAndMana(out, aiPlayer);
 		// highlightBoard(out, gameState);
 
 		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
@@ -57,10 +56,6 @@ public class Initalize implements EventProcessor{
 		BasicCommands.setPlayer1Mana(out, player);
 	}
 
-	public void setAIHealthAndMana(ActorRef out, Player player) {
-		BasicCommands.setPlayer2Health(out, player);
-		BasicCommands.setPlayer2Mana(out, player);
-	}
 
 	public void renderHand(ActorRef out, GameState gameState) {
 		for (int iteration = 0; iteration < 3; iteration++) {
@@ -94,7 +89,7 @@ public class Initalize implements EventProcessor{
 	}
 
 	public Player setPlayerAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getPlayer();
+		Player player = gameState.getCurrentPlayer();
 		UnitWrapper unitWrapper = new UnitWrapper(unit, "Player", 20, 2, player, null);
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
@@ -123,7 +118,7 @@ public class Initalize implements EventProcessor{
 	}
 
 	public Player setAiAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getPlayer();
+		Player player = gameState.getCurrentPlayer();
 		UnitWrapper unitWrapper = new UnitWrapper(unit, "AI", 20, 2, player, null);
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
