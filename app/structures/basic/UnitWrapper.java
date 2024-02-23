@@ -116,6 +116,11 @@ public class UnitWrapper {
     public boolean getHasAttacked() {
         return this.hasAttacked;
     }
+    
+    public void decreaseHealth(int damage) {
+    	this.health -= damage;
+    	
+    }
 
 	public void increaseHealth(int healthIncrease) {
 		this.health += healthIncrease;
