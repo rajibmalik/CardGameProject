@@ -1,11 +1,16 @@
 package events;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
 import commands.BasicCommands;
+import controllers.PlayerController;
 import structures.GameState;
+import structures.basic.Card;
 import structures.basic.Player;
+import utils.OrderedCardLoader;
 
 /**
  * Indicates that the user has clicked an object on the game canvas, in this
@@ -60,11 +65,32 @@ public class EndTurnClicked implements EventProcessor {
 			if (gameState.getAIPlayerController().getTurn()==1) {
 				gameState.getAIPlayerController().drawInitialHand();
 			}	
+
+			// draws a card in backend for AI
+			gameState.getAIPlayerController().drawCard(); 
 		} else if (nextPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().setTurnMana();
 			BasicCommands.setPlayer1Mana(out, nextPlayer);
 
+			// draws and renders card for human
+			drawCard(gameState.getHumanPlayerController(), out); 
 		}
 	}
 
+	// draws a card in back end for player & renders the card
+	private void drawCard(PlayerController playerController, ActorRef out) {
+
+		if (playerController.drawCard()) {
+			List<Card> cards = OrderedCardLoader.getPlayer1Cards(1);
+			int topCardIndex  = playerController.getPlayerDeck().getTopCardIndex();
+			Card topCard = cards.get(topCardIndex);
+
+			BasicCommands.drawCard(out, topCard, playerController.getPlayerHand().getHand().size(), 1);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
