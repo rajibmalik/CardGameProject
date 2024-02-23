@@ -66,14 +66,15 @@ public class EndTurnClicked implements EventProcessor {
 				gameState.getAIPlayerController().drawInitialHand();
 			}	
 
-			// draws a card in backend for AI
-			gameState.getAIPlayerController().drawCard(); 
+			// draws and renders a card for the human
+			drawCard(gameState.getHumanPlayerController(), out); 
+			
 		} else if (nextPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().setTurnMana();
 			BasicCommands.setPlayer1Mana(out, nextPlayer);
 
-			// draws and renders card for human
-			drawCard(gameState.getHumanPlayerController(), out); 
+			// draws a card for the AI in the backend
+			gameState.getAIPlayerController().drawCard(); 
 		}
 	}
 
