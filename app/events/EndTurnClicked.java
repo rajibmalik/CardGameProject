@@ -83,7 +83,7 @@ public class EndTurnClicked implements EventProcessor {
 
 		if (playerController.drawCard()) {
 			List<Card> cards = OrderedCardLoader.getPlayer1Cards(1);
-			int topCardIndex  = playerController.getPlayerDeck().getTopCardIndex();
+			int topCardIndex  = playerController.getPlayerDeck().getTopCardIndex() - 1;
 			Card topCard = cards.get(topCardIndex);
 
 			BasicCommands.drawCard(out, topCard, playerController.getPlayerHand().getHand().size(), 1);
