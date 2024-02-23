@@ -17,9 +17,15 @@ public class PlayerController {
         this.turn=1;
     }
 
-    public void drawCard() {
-        CardWrapper cardWrapper = player.getDeck().getTopCard();
-        player.getHand().addCard(cardWrapper);
+    public boolean drawCard() {
+        if (player.getHand().getHand().size() < 5)  {
+            CardWrapper cardWrapper = player.getDeck().getTopCard();
+            player.getHand().addCard(cardWrapper);
+
+            return true;
+        }
+
+        return false;
     }
 
     public void drawInitialHand() {
