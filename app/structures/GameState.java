@@ -8,7 +8,6 @@ import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
-//import utils.BoardHighlighter;
 
 /**
  * This class can be used to hold information about the on-going game. Its
@@ -38,13 +37,14 @@ public class GameState {
 		humanPlayerController = new PlayerController(humanPlayer);
 		aiPlayerController = new PlayerController(aiPlayer);
 
-		// BoardHighlighter boardHighlighter = new BoardHighlighter(board);
 	}
 
 	public void initializeGame() {
 		humanPlayerController.drawInitialHand();
 		humanPlayerController.setTurnMana();
-		humanPlayerController.getMana();
+
+		aiPlayerController.drawInitialHand();
+		aiPlayerController.setTurnMana();
 	}
 
 	public void playerDrawCard() {
@@ -57,13 +57,11 @@ public class GameState {
 	}
 
 	public Deck getPlayerDeck() {
-
 		if (currentPlayer == humanPlayer) {
 			return humanPlayerController.getPlayerDeck();
 		} else {
 			return aiPlayerController.getPlayerDeck();
 		}
-
 	}
 
 	public Board getBoard() {
@@ -71,7 +69,6 @@ public class GameState {
 	}
 
 	public Hand getPlayerHand() {
-
 		if (currentPlayer == humanPlayer) {
 			return humanPlayerController.getPlayerHand();
 		} else {
@@ -80,7 +77,6 @@ public class GameState {
 	}
 
 	public void switchPlayer() {
-
 		if (currentPlayer == humanPlayer) {
 			currentPlayer = aiPlayer;
 		} else {
@@ -89,12 +85,10 @@ public class GameState {
 	}
 
 	public PlayerController getHumanPlayerController() {
-
 		return humanPlayerController;
 	}
 
 	public PlayerController getAIPlayerController() {
-
 		return aiPlayerController;
 	}
 

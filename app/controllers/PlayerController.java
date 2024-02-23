@@ -48,8 +48,12 @@ public class PlayerController {
     public void clearMana() {
     	player.setMana(0);
     }
-    public void getMana() {
-    	player.getMana();
+    public int getMana() {
+    	return player.getMana();
+    }
+
+    public Player getPlayer() {
+        return this.player;
     }
     
     public void nextTurn() {
