@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import abilities.Deathwatch;
@@ -17,7 +18,7 @@ import abilities.UnitAbility;
 
 public class Deck{
     private ArrayList<CardWrapper> deck;
-    int topCardIndex;
+    private int topCardIndex;
 
     // "1" creates player deck 
     // "2" creates AI deck
@@ -28,8 +29,7 @@ public class Deck{
 
     public void createDeck(String deckNumber) {
         // Specifies the directory containing JSON files of the cards
-    	String cardConfigPath = "conf/gameconfs/cards";
-
+        String cardConfigPath = "conf/gameconfs/cards";
 
         // Creates an ObjectMapper to parse JSON files
         ObjectMapper objectMapper = new ObjectMapper();
@@ -123,5 +123,9 @@ public class Deck{
 
     public ArrayList<CardWrapper> getDeck() {
         return this.deck;
+    }
+
+    public int getTopCardIndex() {
+        return this.topCardIndex;
     }
 }
