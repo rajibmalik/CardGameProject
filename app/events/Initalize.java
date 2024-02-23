@@ -34,6 +34,7 @@ public class Initalize implements EventProcessor{
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
 		initializeGameState(gameState);
+		highlightBoard(out, gameState);
 
 		renderHand(out, gameState);
 		Unit playerAvatar = setPlayerAvatarFrontend(out, gameState);
@@ -42,7 +43,7 @@ public class Initalize implements EventProcessor{
 
 		Unit  aiAvatar = setAiAvatarFrontend(out, gameState);
 		Player aiPlayer = setAiAvatarBackend(gameState, aiAvatar);
-		// highlightBoard(out, gameState);
+		
 
 		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
 	}
@@ -83,7 +84,7 @@ public class Initalize implements EventProcessor{
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 5; j++) {
 				Tile tile = board[i][j].getTile();
-				BasicCommands.drawTile(out, tile, 1);
+				BasicCommands.drawTile(out, tile, 0);
 			}
 		}
 	}
