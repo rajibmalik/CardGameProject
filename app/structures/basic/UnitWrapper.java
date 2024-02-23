@@ -117,5 +117,10 @@ public class UnitWrapper {
         return this.hasAttacked;
     }
 
+	public void increaseHealth(int healthIncrease) {
+		this.health += healthIncrease;
+		
+	}
+
 
 }

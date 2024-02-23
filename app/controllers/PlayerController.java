@@ -6,6 +6,8 @@ import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
+import structures.basic.Card;
+
 
 public class PlayerController {
     Player player;
@@ -71,6 +73,17 @@ public class PlayerController {
 
     public int getTurn() {
         return this.turn;
+    }
+    
+    public static void DeductMana(Player player, CardWrapper card) {
+        int manaCost = card.getManaCost();
+        int currentMana = player.getMana();
+        
+        if (currentMana >= manaCost) {
+            player.setMana(currentMana - manaCost);
+        } else {
+            System.out.println("Insufficient mana to play this card.");
+        }
     }
 
 }
