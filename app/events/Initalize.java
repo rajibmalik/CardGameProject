@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
 import commands.BasicCommands;
+import controllers.PlayerController;
 import demo.CommandDemo;
 import demo.Loaders_2024_Check;
 import structures.GameState;
@@ -39,12 +40,13 @@ public class Initalize implements EventProcessor{
 		renderHand(out, gameState);
 		Unit playerAvatar = setPlayerAvatarFrontend(out, gameState);
 		Player humanPlayer = setPlayerAvatarBackend(gameState, playerAvatar);
-		setPlayerHealthAndMana(out, humanPlayer);
-
+		setPlayerHealth(out, humanPlayer);
+		setPlayerMana(out, gameState.getHumanPlayerController());
+		
 		Unit  aiAvatar = setAiAvatarFrontend(out, gameState);
 		Player aiPlayer = setAiAvatarBackend(gameState, aiAvatar);
+		setAvatarHealth(out, aiPlayer);
 		
-
 		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
 	}
 
@@ -52,11 +54,23 @@ public class Initalize implements EventProcessor{
 		gameState.initializeGame();
 	}
 
-	public void setPlayerHealthAndMana(ActorRef out, Player player) {
+	public void setPlayerHealth(ActorRef out, Player player) {
 		BasicCommands.setPlayer1Health(out, player);
-		BasicCommands.setPlayer1Mana(out, player);
 	}
 
+	public void setAvatarHealth(ActorRef out, Player player) {
+		BasicCommands.setPlayer2Health(out, player);
+	}
+
+	public void setPlayerMana(ActorRef out, PlayerController playerController) {
+		int turn = playerController.getTurn();
+		int mana = turn + 1;
+
+		Player player = playerController.getPlayer();
+		player.setMana(mana);
+		
+		BasicCommands.setPlayer1Mana(out, playerController.getPlayer());
+	}
 
 	public void renderHand(ActorRef out, GameState gameState) {
 		for (int iteration = 0; iteration < 3; iteration++) {
@@ -146,10 +160,6 @@ public class Initalize implements EventProcessor{
 		return unit;
 	}
 
-	public void setPlayerHealth(ActorRef out, Player player) {
-		BasicCommands.setPlayer1Health(out, player);
-	}
-	
 }
 
 
