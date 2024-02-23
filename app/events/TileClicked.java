@@ -4,6 +4,7 @@ package events;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
+import controllers.PlayerController;
 import structures.GameState;
 import structures.basic.CardWrapper;
 import structures.basic.Hand;
@@ -36,16 +37,13 @@ public class TileClicked implements EventProcessor{
 		for (CardWrapper card : playerHand.getHand()) {
 			
 			if(card.hasBeenClicked()==true) {
-				
-				if(card.getManaCost()<= gameState.getCurrentPlayer().getMana()) {
-					//perform card action
-					//remove card from hand
+			if(card.getManaCost()<=gameState.getCurrentPlayer().getMana()) {
+				PlayerController.DeductMana(gameState.getCurrentPlayer(), card);
 				}
 	
 			}
 		
 		}
+	}
 		
 	}
-
-}
