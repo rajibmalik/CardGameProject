@@ -114,7 +114,7 @@ public class Initalize implements EventProcessor{
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 5; j++) {
 				Tile tile = board[i][j].getTile();
-				BasicCommands.drawTile(out, tile, 1);
+				BasicCommands.drawTile(out, tile, 0);
 			}
 		}
 	}
