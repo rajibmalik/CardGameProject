@@ -25,6 +25,7 @@ public class EndTurnClicked implements EventProcessor {
 
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
+		System.out.println("HAND SIZE: " + gameState.getHumanPlayerController().getPlayerHand().getHand().size()); // test
 
 		Player currentPlayer = gameState.getCurrentPlayer();
 
@@ -32,13 +33,11 @@ public class EndTurnClicked implements EventProcessor {
 			gameState.getAIPlayerController().clearMana();
 			BasicCommands.setPlayer2Mana(out, currentPlayer);
 			gameState.getAIPlayerController().nextTurn();
-			// need logic to add card to hand
 			// need logic to set all units to be able to move and attack again 
 		} else if (currentPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().clearMana();
 			BasicCommands.setPlayer1Mana(out, currentPlayer);
 			gameState.getHumanPlayerController().nextTurn();
-			// need logic to add card to hand
 			// need logic to set all units to be able to move and attack again 
 		}
 		// Switch to the next player
@@ -82,7 +81,7 @@ public class EndTurnClicked implements EventProcessor {
 	private void drawCard(PlayerController playerController, ActorRef out) {
 
 		if (playerController.drawCard()) {
-			List<Card> cards = OrderedCardLoader.getPlayer1Cards(1);
+			List<Card> cards = OrderedCardLoader.getPlayer1Cards(2);
 			int topCardIndex  = playerController.getPlayerDeck().getTopCardIndex() - 1;
 			Card topCard = cards.get(topCardIndex);
 
@@ -94,4 +93,5 @@ public class EndTurnClicked implements EventProcessor {
 			}
 		}
 	}
+
 }

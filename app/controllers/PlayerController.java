@@ -6,8 +6,6 @@ import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
-import structures.basic.Card;
-
 
 public class PlayerController {
     Player player;
@@ -74,8 +72,22 @@ public class PlayerController {
     public int getTurn() {
         return this.turn;
     }
+
+    public boolean canPlayCard(Player player, CardWrapper card) {
+        int manaCost = card.getManaCost();
+        int currentMana = player.getMana();
+
+        if (currentMana >= manaCost) {
+            return true;
+        } else {
+            System.out.println("Insufficient mana to play this card.");
+        }
+
+        return false;
+
+    }
     
-    public static void DeductMana(Player player, CardWrapper card) {
+    public static void deductMana(Player player, CardWrapper card) {
         int manaCost = card.getManaCost();
         int currentMana = player.getMana();
         
@@ -86,4 +98,10 @@ public class PlayerController {
         }
     }
 
+    public void removeCardFromHand(int id) {
+        ArrayList<CardWrapper> hand = player.getHand().getHand();
+    
+        // Remove cardWrapper if the cardWrapper id is equal to id
+        hand.removeIf(cardWrapper -> cardWrapper.getId() == id);
+    }
 }

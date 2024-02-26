@@ -1,5 +1,7 @@
 package events;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
@@ -10,6 +12,8 @@ import demo.Loaders_2024_Check;
 import structures.GameState;
 import structures.basic.Card;
 import structures.basic.CardWrapper;
+import structures.basic.Deck;
+import structures.basic.Hand;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
@@ -34,20 +38,30 @@ public class Initalize implements EventProcessor{
 
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
+		initializeBackEnd(out, gameState);
+		initializehumanPlayer(out, gameState);
+		initalizeAiPlayer(out, gameState);
+		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
+	}
+
+	public void initializeBackEnd(ActorRef out, GameState gameState) {
 		initializeGameState(gameState);
 		highlightBoard(out, gameState);
+	}
 
+	public void initializehumanPlayer(ActorRef out, GameState gameState) {
 		renderHand(out, gameState);
 		Unit playerAvatar = setPlayerAvatarFrontend(out, gameState);
 		Player humanPlayer = setPlayerAvatarBackend(gameState, playerAvatar);
 		setPlayerHealth(out, humanPlayer);
 		setPlayerMana(out, gameState.getHumanPlayerController());
-		
+	}
+
+	public void initalizeAiPlayer(ActorRef out, GameState gameState) {
 		Unit  aiAvatar = setAiAvatarFrontend(out, gameState);
 		Player aiPlayer = setAiAvatarBackend(gameState, aiAvatar);
 		setAvatarHealth(out, aiPlayer);
-		
-		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
+
 	}
 
 	public void initializeGameState(GameState gameState) {
@@ -58,10 +72,7 @@ public class Initalize implements EventProcessor{
 		BasicCommands.setPlayer1Health(out, player);
 	}
 
-	public void setAvatarHealth(ActorRef out, Player player) {
-		BasicCommands.setPlayer2Health(out, player);
-	}
-
+	// test 
 	public void setPlayerMana(ActorRef out, PlayerController playerController) {
 		int turn = playerController.getTurn();
 		int mana = turn + 1;
@@ -72,22 +83,27 @@ public class Initalize implements EventProcessor{
 		BasicCommands.setPlayer1Mana(out, playerController.getPlayer());
 	}
 
+	public void setAvatarHealth(ActorRef out, Player player) {
+		BasicCommands.setPlayer2Health(out, player);
+	}
+
+
 	public void renderHand(ActorRef out, GameState gameState) {
-		for (int iteration = 0; iteration < 3; iteration++) {
-			int handPosition = 1;
-	
-			for (Card card : OrderedCardLoader.getPlayer1Cards(1)) {
-				BasicCommands.drawCard(out, card, handPosition, 1);
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				handPosition++;
-	
-				if (handPosition == 4) {
-					break;
-				}
+		System.out.println("Rendering hand");
+
+		Hand hand = gameState.getPlayerHand();
+		int handPosition = 1;
+
+		for (CardWrapper cardWrapper:hand.getHand()) {
+			BasicCommands.drawCard(out, cardWrapper.getCard(), handPosition, 1);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+			handPosition ++;
+
+			if (handPosition == 4) {
+				break;
 			}
 		}
 	}
@@ -98,7 +114,7 @@ public class Initalize implements EventProcessor{
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 5; j++) {
 				Tile tile = board[i][j].getTile();
-				BasicCommands.drawTile(out, tile, 0);
+				BasicCommands.drawTile(out, tile, 1);
 			}
 		}
 	}

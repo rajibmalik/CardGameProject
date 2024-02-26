@@ -12,7 +12,7 @@ public class UnitWrapper {
     private Player player; // Player reference to the owner of the unit
     private UnitAbility ability;
     private final int id; // Unique identifier for each UnitWrapper, cannot be changed
-    private static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
+    public static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
                                    // allowing us to keep track of the counter
 
     // Default constructor
@@ -35,6 +35,10 @@ public class UnitWrapper {
 
     public int getId() {
         return this.id;
+    }
+
+    public static int getNextId() {
+        return nextId;
     }
 
     public void setHealth(int health) {
@@ -126,6 +130,12 @@ public class UnitWrapper {
 		this.health += healthIncrease;
 		
 	}
+
+    public String toString() {
+        return (this.name + ": attack " + this.attack +  ", " + "health " + this.health );
+    }
+
+
 
 
 }

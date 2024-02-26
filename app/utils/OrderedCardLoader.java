@@ -29,7 +29,7 @@ public class OrderedCardLoader {
 			for (String filename : new File(cardsDIR).list()) {
 				if (filename.startsWith("1_")) {
 					// this is a deck 1 card
-					cardsInDeck.add(BasicObjectBuilders.loadCard(cardsDIR+filename, cardID, Card.class));
+					cardsInDeck.add(BasicObjectBuilders.loadCard(cardsDIR+filename, cardID++, Card.class));
 				}
 			}
 		}
@@ -52,7 +52,7 @@ public class OrderedCardLoader {
 			for (String filename : new File(cardsDIR).list()) {
 				if (filename.startsWith("2_")) {
 					// this is a deck 2 card
-					cardsInDeck.add(BasicObjectBuilders.loadCard(cardsDIR+filename, cardID, Card.class));
+					cardsInDeck.add(BasicObjectBuilders.loadCard(cardsDIR+filename, cardID++, Card.class));
 				}
 			}
 		}

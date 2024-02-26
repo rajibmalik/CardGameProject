@@ -5,12 +5,19 @@ public class CardWrapper {
     private String name;
     private boolean hasBeenClicked;
     private Card card;
+    private final int id;
+    public static int nextId = 1;
 
     public CardWrapper(int manaCost, String name, Card card) {
     	this.card = card;
         this.manaCost = manaCost;
         this.name = name;
         this.hasBeenClicked = false;
+        this.id = nextId++;
+    }
+
+    public int getId() {
+        return this.id;
     }
     
     public Card getCard() {
@@ -45,4 +52,6 @@ public class CardWrapper {
         this.hasBeenClicked = hasBeenClicked;
     }
 }
+
+
 
