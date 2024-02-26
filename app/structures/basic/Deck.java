@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import abilities.Deathwatch;
 import abilities.SpellAbility;
 import abilities.UnitAbility;
+import commands.BasicCommands;
+import utils.OrderedCardLoader;
 
 // This class represents a deck object which is an arraylist, containing cardWrapper objects
 // which are generated from the card configuration files.
@@ -24,49 +27,27 @@ public class Deck{
     // "2" creates AI deck
     public Deck(String deckNumber) {
         this.deck = new ArrayList<>();
-        createDeck(createFilePattern(deckNumber));
+        createDeck(deckNumber);
     }
 
     public void createDeck(String deckNumber) {
-        // Specifies the directory containing JSON files of the cards
-        String cardConfigPath = "conf/gameconfs/cards";
+        List<Card> cards = null;
 
-        // Creates an ObjectMapper to parse JSON files
-        ObjectMapper objectMapper = new ObjectMapper();
+        if (deckNumber == "1") {
+            cards = OrderedCardLoader.getPlayer1Cards(2);
 
-        // Creates a path object, representsing the cardConfig Directory
-        Path directory = Paths.get(cardConfigPath);
-
-        // Checks if the directory exists and is a directory
-        if (Files.exists(directory) && Files.isDirectory(directory)) {
-            // Iterates through the card configuration files for player or AI
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, deckNumber)) {
-                for (Path file:stream) {
-                    // reads and parses card JSON file into a Card object
-                    Card card = objectMapper.readValue(file.toFile(), Card.class);
-                    if (card.getIsCreature()) {
-                        // Instantiates a UnitCard object using Card object, then added to deck using createUnitFromCard()
-                         createCardWrapper(card, true);
-                    } else {
-                        // Instantiates a SpellCard object using Card object, then added to deck using createSpellFromCard()
-                        createCardWrapper(card, false);
-                    }
-                }
-            } catch (IOException e) {
-                System.err.println("Error while reading or parsing JSON card configuration files" + e.getMessage());
-            }
-
-            // duplicates the deck, maintaining the correct order of cards
-            this.deck.addAll(this.deck);
-
+            
         } else {
-            System.err.println("Directory does not exist or is not a directory " + cardConfigPath);
+            cards = OrderedCardLoader.getPlayer2Cards(2);
         }
-    }
 
-    // file pattern to find player ("1") or AI ("2") cards
-    private String createFilePattern(String number) {
-        return number + "*.json";
+        for (Card crd:cards) {
+            if (crd.getIsCreature()) {
+                createCardWrapper(crd, true);
+            } else {
+                createCardWrapper(crd, false);
+            }
+        }
     }
 
     private void createCardWrapper(Card card, boolean isCreature) {

@@ -22,11 +22,13 @@ public class CardClicked implements EventProcessor {
 
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
-
 		int handPosition = message.get("position").asInt();
 
-		Hand playerHand = gameState.getPlayerHand();
+		setCardClicked(handPosition, gameState);
+	}
 
+	public void setCardClicked(int handPosition, GameState gameState) {
+		Hand playerHand = gameState.getPlayerHand();
 		// Check if the clicked card is still in the player's hand
 		if (handPosition >= 1 && handPosition <= playerHand.getHand().size()) {
 			CardWrapper clickedCard = gameState.getPlayerHand().getCard(handPosition - 1);
@@ -45,7 +47,6 @@ public class CardClicked implements EventProcessor {
 			// Handle invalid hand position (out of bounds)
 			System.out.println("Invalid hand position: " + handPosition);
 		}
-
 	}
 
 }

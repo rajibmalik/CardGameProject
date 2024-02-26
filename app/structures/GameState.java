@@ -1,10 +1,7 @@
 package structures;
 
-import java.util.ArrayList;
-
 import controllers.PlayerController;
 import structures.basic.Board;
-import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
@@ -103,8 +100,4 @@ public class GameState {
 	public Player getHumanPlayer() {
 		return this.humanPlayer;
 	}
-
-	// public void highlightBoard() {
-	// boardHighlighter.setBoardToHighlight();
-	// }
 }
