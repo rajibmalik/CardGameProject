@@ -27,6 +27,7 @@ public class Tile {
 	int height;
 	int tilex;
 	int tiley;
+	private int highlightStatus;
 	
 	public Tile() {}
 	
@@ -40,6 +41,8 @@ public class Tile {
 		this.height = height;
 		this.tilex = tilex;
 		this.tiley = tiley;
+
+		this.highlightStatus = 0;
 	}
 	
 	public Tile(List<String> tileTextures, int xpos, int ypos, int width, int height, int tilex, int tiley) {
@@ -93,6 +96,14 @@ public class Tile {
 	}
 	public void setTiley(int tiley) {
 		this.tiley = tiley;
+	}
+	
+	public int getHighlightStatus() {
+		return this.highlightStatus;
+	}
+
+	public void setHighlightStatus(int status) {
+		this.highlightStatus = status;
 	}
 	
 	/**

@@ -6,6 +6,7 @@ public class UnitWrapper {
     private String name; 
     private int health;
     private int attack;
+    private TileWrapper tile;
     private boolean hasBeenClicked;
     private boolean hasMoved;
     private boolean hasAttacked;
@@ -16,7 +17,7 @@ public class UnitWrapper {
                                    // allowing us to keep track of the counter
 
     // Default constructor
-    public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability) {
+    public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability, TileWrapper tile) {
 
         if (health < 0 || attack < 0) {
             throw new IllegalArgumentException("Health and attack values cannot be negative & Unit and Player cannot be null!");
@@ -31,6 +32,7 @@ public class UnitWrapper {
         this.hasAttacked = false;
         this.id = nextId++; // id is assigned to value of nextId, then nextId incremented  
         this.ability = ability;
+        this.tile=tile;
     }
 
     public int getId() {
@@ -40,6 +42,14 @@ public class UnitWrapper {
     public static int getNextId() {
         return nextId;
     }
+    
+    public TileWrapper getTile() {
+ 		return tile;
+ 	}
+
+ 	public void setTile(TileWrapper tile) {
+ 		this.tile = tile;
+ 	}
 
     public void setHealth(int health) {
         if (health < 0) {
@@ -128,7 +138,6 @@ public class UnitWrapper {
 
 	public void increaseHealth(int healthIncrease) {
 		this.health += healthIncrease;
-		
 	}
 
     public String toString() {

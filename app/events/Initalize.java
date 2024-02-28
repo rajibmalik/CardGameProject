@@ -61,7 +61,6 @@ public class Initalize implements EventProcessor{
 		Unit  aiAvatar = setAiAvatarFrontend(out, gameState);
 		Player aiPlayer = setAiAvatarBackend(gameState, aiAvatar);
 		setAvatarHealth(out, aiPlayer);
-
 	}
 
 	public void initializeGameState(GameState gameState) {
@@ -115,17 +114,20 @@ public class Initalize implements EventProcessor{
 			for (int j = 0; j < 5; j++) {
 				Tile tile = board[i][j].getTile();
 				BasicCommands.drawTile(out, tile, 0);
+				try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 		}
 	}
 
 	public Player setPlayerAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getCurrentPlayer();
-		UnitWrapper unitWrapper = new UnitWrapper(unit, "Player", 20, 2, player, null);
+		Player player = gameState.getHumanPlayer();
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[1][2];
+		UnitWrapper unitWrapper = new UnitWrapper(unit, "Player", 20, 2, player, null, tileWrapper);
+
 		tileWrapper.setUnitWrapper(unitWrapper);
+		player.addUnit(unitWrapper);
 
 		return player;
 	}
@@ -149,12 +151,14 @@ public class Initalize implements EventProcessor{
 	}
 
 	public Player setAiAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getCurrentPlayer();
-		UnitWrapper unitWrapper = new UnitWrapper(unit, "AI", 20, 2, player, null);
+		Player player = gameState.getAIPlayer();
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[7][2];
+		
+		UnitWrapper unitWrapper = new UnitWrapper(unit, "AI", 20, 2, player, null, tileWrapper);
 		tileWrapper.setUnitWrapper(unitWrapper);
+		player.addUnit(unitWrapper);
 
 		return player;
 	}

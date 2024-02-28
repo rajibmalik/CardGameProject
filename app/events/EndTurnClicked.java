@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import controllers.PlayerController;
+import controllers.TileHighlightController;
 import structures.GameState;
 import structures.basic.Card;
 import structures.basic.Player;
@@ -26,17 +27,19 @@ public class EndTurnClicked implements EventProcessor {
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
 		System.out.println("HAND SIZE: " + gameState.getHumanPlayerController().getPlayerHand().getHand().size()); // test
-
+		TileHighlightController.removeBoardHighlight(out, gameState);
 		Player currentPlayer = gameState.getCurrentPlayer();
 
 		if (currentPlayer == gameState.getAIPlayer()) {
 			gameState.getAIPlayerController().clearMana();
 			BasicCommands.setPlayer2Mana(out, currentPlayer);
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			gameState.getAIPlayerController().nextTurn();
 			// need logic to set all units to be able to move and attack again 
 		} else if (currentPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().clearMana();
 			BasicCommands.setPlayer1Mana(out, currentPlayer);
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			gameState.getHumanPlayerController().nextTurn();
 			// need logic to set all units to be able to move and attack again 
 		}
@@ -60,7 +63,8 @@ public class EndTurnClicked implements EventProcessor {
 
 		if (nextPlayer == gameState.getAIPlayer()) {
 			gameState.getAIPlayerController().setTurnMana();
-			BasicCommands.setPlayer2Mana(out, nextPlayer);		
+			BasicCommands.setPlayer2Mana(out, nextPlayer);	
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			if (gameState.getAIPlayerController().getTurn()==1) {
 				gameState.getAIPlayerController().drawInitialHand();
 			}	
@@ -71,7 +75,7 @@ public class EndTurnClicked implements EventProcessor {
 		} else if (nextPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().setTurnMana();
 			BasicCommands.setPlayer1Mana(out, nextPlayer);
-
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			// draws a card for the AI in the backend
 			gameState.getAIPlayerController().drawCard(); 
 		}
