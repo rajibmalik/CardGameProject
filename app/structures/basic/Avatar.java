@@ -7,7 +7,7 @@ import abilities.UnitAbility;
 public class Avatar extends UnitWrapper {
     private int robustness;
 
-    public Avatar(Unit unit, String name, Player player, UnitAbility ability,TileWrapper tile) {
+    public Avatar(Unit unit, String name, int health, int attack, Player player, UnitAbility ability, TileWrapper tile) {
         super(unit, name, 20, 2, player, ability,tile); // Player avatar is initialised with 2 health and attack
         this.robustness = 0;
     }

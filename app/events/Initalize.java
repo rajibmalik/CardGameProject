@@ -10,6 +10,7 @@ import controllers.PlayerController;
 import demo.CommandDemo;
 import demo.Loaders_2024_Check;
 import structures.GameState;
+import structures.basic.Avatar;
 import structures.basic.Card;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
@@ -124,10 +125,10 @@ public class Initalize implements EventProcessor{
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[1][2];
-		UnitWrapper unitWrapper = new UnitWrapper(unit, "Player", 20, 2, player, null, tileWrapper);
+		Avatar avatar = new Avatar(unit, "Player", 20, 2, player, null, tileWrapper);
 
-		tileWrapper.setUnitWrapper(unitWrapper);
-		player.addUnit(unitWrapper);
+		tileWrapper.setUnitWrapper(avatar);
+		player.addUnit(avatar);
 
 		return player;
 	}
@@ -156,9 +157,9 @@ public class Initalize implements EventProcessor{
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[7][2];
 		
-		UnitWrapper unitWrapper = new UnitWrapper(unit, "AI", 20, 2, player, null, tileWrapper);
-		tileWrapper.setUnitWrapper(unitWrapper);
-		player.addUnit(unitWrapper);
+		Avatar avatar = new Avatar(unit, "AI", 20, 2, player, null, tileWrapper);
+		tileWrapper.setUnitWrapper(avatar);
+		player.addUnit(avatar);
 
 		return player;
 	}

@@ -6,6 +6,8 @@ import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
+import structures.basic.TileWrapper;
+import structures.basic.UnitWrapper;
 
 public class PlayerController {
     Player player;
@@ -84,7 +86,6 @@ public class PlayerController {
         }
 
         return false;
-
     }
     
     public static void deductMana(Player player, CardWrapper card) {
@@ -103,5 +104,9 @@ public class PlayerController {
     
         // Remove cardWrapper if the cardWrapper id is equal to id
         hand.removeIf(cardWrapper -> cardWrapper.getId() == id);
+    }
+
+    public ArrayList<UnitWrapper> getUnits() {
+        return player.getUnits();
     }
 }
