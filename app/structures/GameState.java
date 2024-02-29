@@ -1,5 +1,8 @@
 package structures;
 
+import akka.actor.ActorRef;
+import commands.BasicCommands;
+import controllers.AIPlayerController;
 import controllers.PlayerController;
 import structures.basic.Board;
 import structures.basic.Deck;
@@ -19,7 +22,7 @@ public class GameState {
 	private Player aiPlayer;
 	private Player currentPlayer;
 	private PlayerController humanPlayerController;
-	private PlayerController aiPlayerController;
+	private AIPlayerController aiPlayerController;
 	Board board = new Board();
 
 	public GameState() {
@@ -32,10 +35,36 @@ public class GameState {
 
 		// Create a PlayerController for both human and AI players
 		humanPlayerController = new PlayerController(humanPlayer);
-		aiPlayerController = new PlayerController(aiPlayer);
-
+		aiPlayerController = new AIPlayerController(aiPlayer);
 	}
 
+	public void AITakeTurn(ActorRef out, GameState gameState) {
+		if (currentPlayer == getAIPlayer()) {
+			while (aiPlayerController.canPlayUnitCard(gameState) && (!aiPlayerController.getValidTiles(gameState).isEmpty())) {
+				System.out.println("AI TURN");
+				// play unit card with the highest mana
+				aiPlayerController.playUnitCard(out, gameState);
+			}
+			System.out.println("Ending turn");
+
+		aiPlayerController.endTurn(gameState);
+		gameState.getAIPlayerController().clearMana();
+		BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		playerGainMain(out, gameState);
+		}
+	}
+
+	public void playerGainMain(ActorRef out, GameState gameState) {
+		gameState.getHumanPlayerController().clearMana();
+		BasicCommands.setPlayer1Mana(out, gameState.getHumanPlayer());
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		gameState.getHumanPlayerController().nextTurn();
+		BasicCommands.setPlayer1Mana(out, gameState.getHumanPlayer());
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+	
 	public void initializeGame() {
 		humanPlayerController.drawInitialHand();
 		humanPlayerController.setTurnMana();
