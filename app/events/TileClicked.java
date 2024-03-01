@@ -18,6 +18,7 @@ import structures.basic.SpellCard;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
 import structures.basic.Unit;
+import structures.basic.UnitAnimationType;
 import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
@@ -38,38 +39,176 @@ import abilities.UnitAbility;
 public class TileClicked implements EventProcessor {
 	private TileWrapper tileWrapper;
 	private Tile tile;
+	private TileWrapper lastTileClicked;
 
 	@Override
+
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
 		Player currentPlayer = gameState.getCurrentPlayer();
 		if (currentPlayer == gameState.getHumanPlayer()) {
 			setTileClicked(gameState, message);
-
-			// finds and sets if a card has been clicked
-			CardWrapper cardPlayed = null;
-
-			for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
-				if (cardWrapper.hasBeenClicked() == true) {
-					cardPlayed = cardWrapper;
-				}
-			}
-
-			if (cardPlayed != null && canPlayCard(gameState, cardPlayed) && isTileHighlighted(this.tile) == true) {
-				playCard(cardPlayed, gameState, out);
-				TileHighlightController.removeBoardHighlight(out, gameState);
-				deductAndRenderMana(gameState, out, cardPlayed);
-				removeCard(out, gameState, cardPlayed);
-
+			
+			//Will run if a card was clicked prior to tile click
+			if (hasCardBeenClicked(gameState)) {
+				handleCardClick(out, gameState);
+			//Will run if a tile containing a unit was clicked
+			} else if (tileWrapper.getHasUnit() && getTileHighlighted(this.tile)!=2) {
+				handleUnitClick(out, gameState,currentPlayer);
+			//Will run if an empty highlighted tile was clicked to move a unit
+			} else if (getTileHighlighted(this.tile)==1 && !tileWrapper.getHasUnit()) {
+				handleTileClick(out,gameState);
+			//Will run if a tile containing an enemy unit in attack range was clicked
+			} else if (getTileHighlighted(this.tile)==2 && tileWrapper.getHasUnit()) {
+				handleTileClickAttack(out,gameState);
+			//Resetting board highlight in all other instances
 			} else {
 				TileHighlightController.removeBoardHighlight(out, gameState);
-				UnitWrapper unit = tileWrapper.getUnit();
-				if (unit != null && unit.getHasMoved() == false && currentPlayer.getUnits().contains(unit)) {
-					TileHighlightController.setUnitMovementTileHighlight(out, gameState, unit);
-				}
+			}
+		}
+	}
 
+	private void handleCardClick(ActorRef out, GameState gameState) {
+		CardWrapper clickedCard = getClickedCard(gameState);
+		if (getTileHighlighted(this.tile)==1 && canPlayCard(gameState, clickedCard)) {
+			System.out.println("A card was played");
+			playCard(clickedCard, gameState, out);
+			TileHighlightController.removeBoardHighlight(out, gameState);
+			deductAndRenderMana(gameState, out, clickedCard);
+			removeCard(out, gameState, clickedCard);
+		} else {
+			System.out.println("The card was unclicked");
+			clickedCard.setHasBeenClicked(false);
+			TileHighlightController.removeBoardHighlight(out, gameState);
+		}
+	}
+
+	private void handleUnitClick(ActorRef out, GameState gameState,Player currentPlayer) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		TileHighlightController.removeBoardHighlight(out, gameState);
+		UnitWrapper unit = tileWrapper.getUnit();
+		lastTileClicked = tileWrapper;
+		//if friendly unit is clicked and it hasn't moved or attacked already, highlight tiles for movement
+		if (unit != null && unit.getHasMoved() == false && unit.getHasAttacked() == false && currentPlayer.getUnits().contains(unit)) {
+			System.out.println("Tiles highlighted for movement");
+			TileHighlightController.setUnitMovementTileHighlight(out, gameState, unit);
+			TileHighlightController.highlightEnemyInRange(out,unit,board);
+		} else if (unit != null && unit.getHasMoved() == true && unit.getHasAttacked() == false ) {
+			TileHighlightController.highlightEnemyInRange(out,unit,board);
+		}
+		
+	}
+
+	private void handleTileClick(ActorRef out,GameState gameState) {
+		if(lastTileClicked.getUnit().getHasMoved()==false && lastTileClicked.getUnit().getHasAttacked() == false) {
+			System.out.println("The unit should move");
+			System.out.println(lastTileClicked.getUnit().getName());
+			moveUnitBackend(lastTileClicked);
+			moveUnitFrontend(out);
+			TileHighlightController.removeBoardHighlight(out, gameState);
+			lastTileClicked.getUnit().setHasMoved(true);
+			lastTileClicked.setHasUnit(false);
+			lastTileClicked.setUnitWrapper(null);
+			lastTileClicked = null;	
+		}
+		
+	}
+	
+	private void handleTileClickAttack(ActorRef out,GameState gameState) {
+		Player currentPlayer =gameState.getCurrentPlayer();
+		UnitWrapper attackingUnit = lastTileClicked.getUnit();
+		Unit unit = attackingUnit.getUnit();
+		
+		UnitWrapper unitUnderAttack = tileWrapper.getUnit();
+		Unit unitAttacked = unitUnderAttack.getUnit();
+		
+		if (attackingUnit.getHasAttacked()==false) {
+			System.out.println("Attack the unit");
+			attackingUnit.setHasAttacked(true);
+			System.out.println("Before Decrease - Unit Health: " + unitUnderAttack.getHealth());
+			unitUnderAttack.decreaseHealth(attackingUnit.getAttack());
+			System.out.println("After Decrease - Unit Health: " + unitUnderAttack.getHealth());
+
+			TileHighlightController.removeBoardHighlight(out, gameState);
+			BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.attack);
+			
+			try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+			
+			BasicCommands.setUnitHealth(out, unitAttacked, unitUnderAttack.getHealth());
+			
+			try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+			
+			if(unitUnderAttack.getHealth()<=0) {
+				gameState.unitDealth(currentPlayer, unitUnderAttack);
+				BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.death);
+				BasicCommands.deleteUnit(out, unitAttacked);
+				try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+			} else {
+				//counter attack
+				BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.attack);
+				try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+				attackingUnit.decreaseHealth(unitUnderAttack.getAttack());
+				BasicCommands.setUnitHealth(out, unit, attackingUnit.getHealth());
+				try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+				
+
+				if(attackingUnit.getHealth()<=0) {
+					gameState.unitDealth(currentPlayer, attackingUnit);
+					BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.death);
+					BasicCommands.deleteUnit(out, unit);
+					try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+				}
+			}
+			
+			BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.idle);
+			BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.idle);
+			try { Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+			
+			
+	
+
+		}
+	}
+
+	private boolean hasCardBeenClicked(GameState gameState) {
+		for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
+			if (cardWrapper.hasBeenClicked() == true) {
+				return true;
 			}
 		}
 
+		return false;
+	}
+
+	private CardWrapper getClickedCard(GameState gameState) {
+		for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
+			if (cardWrapper.hasBeenClicked() == true) {
+				return cardWrapper;
+			}
+		}
+		return null;
+	}
+
+	private void moveUnitBackend(TileWrapper lastTileClicked) {
+		UnitWrapper unitWrapper = lastTileClicked.getUnit();
+		if (unitWrapper != null && unitWrapper.getHasMoved() == false) {
+			this.tileWrapper.setHasUnit(true); // set tile to have unit on it
+			this.tileWrapper.setUnitWrapper(unitWrapper);
+			unitWrapper.setTile(tileWrapper); // Set unit to the new tile
+			unitWrapper.setHasMoved(true);
+		}
+	}
+
+	private void moveUnitFrontend(ActorRef out) {
+		UnitWrapper unitWrapper = lastTileClicked.getUnit();
+		Unit unit = unitWrapper.getUnit();
+		BasicCommands.moveUnitToTile(out, unit, tile);
+		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void setTileClicked(GameState gameState, JsonNode message) {
@@ -79,10 +218,13 @@ public class TileClicked implements EventProcessor {
 		this.tile = gameState.getBoard().getBoard()[tilex][tiley].getTile();
 	}
 
-	private boolean isTileHighlighted(Tile tile) {
+	private int getTileHighlighted(Tile tile) {
 		// Check if the clicked tile is highlighted
-		return tile.getHighlightStatus() == 1;
+		int tileHighlightStatus = tile.getHighlightStatus();
+		return tileHighlightStatus;
 	}
+	
+	
 
 	private boolean canPlayCard(GameState gameState, CardWrapper cardWrapper) {
 		if (cardWrapper.getManaCost() <= gameState.getCurrentPlayer().getMana()) {
@@ -167,6 +309,7 @@ public class TileClicked implements EventProcessor {
 
 		UnitWrapper unitWrapper = new UnitWrapper(unit, name, health, attack, player, unitAbility, tileWrapper);
 		this.tileWrapper.setUnitWrapper(unitWrapper);
+		this.tileWrapper.setHasUnit(true);
 		player.addUnit(unitWrapper);
 
 		System.out.println(unitWrapper);
@@ -221,3 +364,4 @@ public class TileClicked implements EventProcessor {
 		}
 	}
 }
+
