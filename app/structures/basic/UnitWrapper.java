@@ -132,7 +132,14 @@ public class UnitWrapper {
     }
     
     public void decreaseHealth(int damage) {
-    	this.health -= damage;
+    	
+    	int newHealth = this.health - damage;
+    	
+    	if(newHealth>0) {
+    		this.health -= damage;
+    	} else {
+    		this.health=0;
+    	}
     	
     }
 

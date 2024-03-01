@@ -11,6 +11,7 @@ import controllers.TileHighlightController;
 import structures.GameState;
 import structures.basic.Card;
 import structures.basic.Player;
+import structures.basic.UnitWrapper;
 import utils.OrderedCardLoader;
 
 /**
@@ -32,6 +33,7 @@ public class EndTurnClicked implements EventProcessor {
 
 		if (currentPlayer == gameState.getHumanPlayer()) {
 			gameState.getHumanPlayerController().clearMana();
+			gameState.resetHumanUnitMovementAndAttack();
 			BasicCommands.setPlayer1Mana(out, gameState.getCurrentPlayer());
 			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			BasicCommands.setPlayer1Mana(out, currentPlayer);
@@ -56,6 +58,9 @@ public class EndTurnClicked implements EventProcessor {
 		}
 
 	}
+	
+
+
 
 	public void setPlayerMana(ActorRef out, Player player) {
 		BasicCommands.setPlayer1Mana(out, player);

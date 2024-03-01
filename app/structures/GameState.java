@@ -1,5 +1,7 @@
 package structures;
 
+import java.util.List;
+
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import controllers.AIPlayerController;
@@ -8,6 +10,7 @@ import structures.basic.Board;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
+import structures.basic.UnitWrapper;
 
 /**
  * This class can be used to hold information about the on-going game. Its
@@ -46,13 +49,35 @@ public class GameState {
 				aiPlayerController.playUnitCard(out, gameState);
 			}
 			System.out.println("Ending turn");
-
+			
+			
 		aiPlayerController.endTurn(gameState);
 		gameState.getAIPlayerController().clearMana();
+		resetAIUnitMovementAndAttack();
 		BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		playerGainMain(out, gameState);
+		}
+	}
+	
+	public void resetHumanUnitMovementAndAttack() {
+		
+		List<UnitWrapper> units = getHumanPlayer().getUnits();
+
+		for (UnitWrapper unit : units) {
+			unit.setHasAttacked(false);
+			unit.setHasMoved(false);
+		}
+	}
+	
+public void resetAIUnitMovementAndAttack() {
+		
+		List<UnitWrapper> units =getAIPlayer().getUnits();
+
+		for (UnitWrapper unit : units) {
+			unit.setHasAttacked(false);
+			unit.setHasMoved(false);
 		}
 	}
 
@@ -129,4 +154,16 @@ public class GameState {
 	public Player getHumanPlayer() {
 		return this.humanPlayer;
 	}
+	
+	public void unitDealth(Player currentPlayer, UnitWrapper unitWrapper) {
+		if(unitWrapper.getHealth()<=0){
+			unitWrapper.getTile().setHasUnit(false);
+			unitWrapper.getTile().setUnitWrapper(null);
+			removeUnit(unitWrapper);
+		}
+	}
+	
+	  public void removeUnit(UnitWrapper unitWrapper){
+	    	currentPlayer.getUnits().remove(unitWrapper);
+	    }
 }

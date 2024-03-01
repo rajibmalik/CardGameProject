@@ -45,6 +45,8 @@ public class UnitController {
 
 		UnitWrapper unitWrapper = new UnitWrapper(unit, name, health, attack, player, unitAbility, tileWrapper);
 		tileWrapper.setUnitWrapper(unitWrapper);
+		tileWrapper.setHasUnit(true);
+		unitWrapper.setTile(tileWrapper);
 		player.addUnit(unitWrapper);
     }
 

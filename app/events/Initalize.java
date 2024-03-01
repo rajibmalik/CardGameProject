@@ -121,16 +121,18 @@ public class Initalize implements EventProcessor{
 	}
 
 	public Player setPlayerAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getHumanPlayer();
+		Player humanPlayer = gameState.getHumanPlayer();
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[1][2];
-		Avatar avatar = new Avatar(unit, "Player", 20, 2, player, null, tileWrapper);
+		Avatar avatar = new Avatar(unit, "Human Player", 20, 2, humanPlayer, null, tileWrapper);
 
 		tileWrapper.setUnitWrapper(avatar);
-		player.addUnit(avatar);
+		tileWrapper.setHasUnit(true);
+		avatar.setTile(tileWrapper);
+		humanPlayer.addUnit(avatar);
 
-		return player;
+		return humanPlayer;
 	}
 
 	public Unit setPlayerAvatarFrontend(ActorRef out, GameState gameState) {
@@ -152,16 +154,18 @@ public class Initalize implements EventProcessor{
 	}
 
 	public Player setAiAvatarBackend(GameState gameState, Unit unit) {
-		Player player = gameState.getAIPlayer();
+		Player aiPlayer = gameState.getAIPlayer();
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[7][2];
 		
-		Avatar avatar = new Avatar(unit, "AI", 20, 2, player, null, tileWrapper);
+		Avatar avatar = new Avatar(unit, "AI", 20, 2, aiPlayer, null, tileWrapper);
 		tileWrapper.setUnitWrapper(avatar);
-		player.addUnit(avatar);
+		tileWrapper.setHasUnit(true);
+		avatar.setTile(tileWrapper);
+		aiPlayer.addUnit(avatar);
 
-		return player;
+		return aiPlayer;
 	}
 
 	public Unit setAiAvatarFrontend (ActorRef out, GameState gameState) {
