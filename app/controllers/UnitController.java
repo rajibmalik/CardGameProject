@@ -1,12 +1,20 @@
 package controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import abilities.Deathwatch;
+import abilities.HornOfTheForsaken;
 import abilities.UnitAbility;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
+import structures.GameState;
+import structures.basic.Avatar;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
 import structures.basic.Unit;
+import structures.basic.UnitAnimationType;
 import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
@@ -49,6 +57,75 @@ public class UnitController {
 		unitWrapper.setTile(tileWrapper);
 		player.addUnit(unitWrapper);
     }
+    
+    
+    public static void attackUnitBackend(ActorRef out,GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
+		attackingUnitWrapper.setHasAttacked(true);
+		unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
+		
+		//Apply horn of forsaken logic if applicable
+		if (unitWrapperAttacked instanceof Avatar && ((Avatar) unitWrapperAttacked).isArtifactActive() == true) {
+			((Avatar) unitWrapperAttacked).decreaseRobustness();
+		} else if (attackingUnitWrapper instanceof Avatar && ((Avatar) attackingUnitWrapper).isArtifactActive() == true) {
+		    HornOfTheForsaken.summonWraithling(out, gameState, unitWrapperAttacked.getTile());
+		}
+
+		
+	}
+	
+	public static void attackUnitFrontEnd(ActorRef out, GameState gameState, Unit attackingUnit, Unit unitAttacked,UnitWrapper unitWrapperAttacked) {
+
+		TileHighlightController.removeBoardHighlight(out, gameState);
+		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.attack);
+		try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		
+		BasicCommands.setUnitHealth(out, unitAttacked, unitWrapperAttacked.getHealth());
+		try { Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+	
+	}
+	
+	public static void unitDeathBackend(ActorRef out, GameState gameState, Player currentPlayer, UnitWrapper unitDying) {
+	    gameState.unitDealth(currentPlayer, unitDying);
+
+	    // Create a copy of the units list to avoid ConcurrentModificationException
+	    List<UnitWrapper> unitsCopy = new ArrayList<>(gameState.getHumanPlayer().getUnits());
+
+	    for (UnitWrapper unit : unitsCopy) {
+	        if (unit.getAbility() instanceof Deathwatch) {
+	            unit.useAbility(out, gameState, unit);
+	        }
+	    }
+	}
+
+	public static void unitDeathFrontEnd(ActorRef out, Player currentPlayer, Unit unitDying) {
+		BasicCommands.playUnitAnimation(out, unitDying, UnitAnimationType.death);
+		BasicCommands.deleteUnit(out, unitDying);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+	
+	
+	public static void moveUnitBackend(UnitWrapper unitWrapper, TileWrapper targetTile) {
+		TileWrapper oldTile = unitWrapper.getTile();
+		
+		//Remove unit from old tile 
+		oldTile.setHasUnit(false);
+		oldTile.setUnitWrapper(null);
+		
+		//Add unit to new tile 
+		targetTile.setHasUnit(true);
+		targetTile.setUnitWrapper(unitWrapper);
+		unitWrapper.setTile(targetTile);
+		unitWrapper.setHasMoved(true);
+	
+	}
+
+	public static void moveUnitFrontend(ActorRef out, UnitWrapper unitWrapper, Tile tile) {
+		Unit unit = unitWrapper.getUnit();
+		BasicCommands.moveUnitToTile(out, unit, tile);
+		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+
 
     
 

@@ -1,5 +1,7 @@
 package structures.basic;
 import abilities.SpellAbility;
+import akka.actor.ActorRef;
+import structures.GameState;
 
 public class SpellCard extends CardWrapper {
     private SpellAbility spellAbility;
@@ -9,8 +11,8 @@ public class SpellCard extends CardWrapper {
         this.spellAbility = spellAbility;
     }
 
-    public void applySpellAbility(Player player, TileWrapper targetTile) {
-        this.spellAbility.castSpell(player, targetTile);
+    public void applySpellAbility(ActorRef out, GameState gameState, TileWrapper targetTile) {
+        this.spellAbility.castSpell(out,gameState, targetTile);
     }
 
     public SpellAbility getSpellAbility() {
