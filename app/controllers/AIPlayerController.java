@@ -56,7 +56,6 @@ public class AIPlayerController extends PlayerController {
 
 		return unit;
     }
-
     public ArrayList<TileWrapper> getValidTiles(GameState gameState) {
         ArrayList<TileWrapper> validTiles = new ArrayList<>();
         TileWrapper[][] board = gameState.getBoard().getBoard();
@@ -65,18 +64,20 @@ public class AIPlayerController extends PlayerController {
         for (UnitWrapper unit : units) {
             TileWrapper unitPosition = unit.getTile();
 
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    int newX = unitPosition.getXpos() + i;
-                    int newY = unitPosition.getYpos() + j;
+            if (unitPosition != null) { //temp solution to fix null pointer error
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        int newX = unitPosition.getXpos() + i;
+                        int newY = unitPosition.getYpos() + j;
 
-                    // Check if the new coordinates are within the bounds of the board
-                    if (newX >= 0 && newX < board.length && newY >= 0 && newY < board[0].length) {
-                        TileWrapper tileWrapper = board[newX][newY];
+                        // Check if the new coordinates are within the bounds of the board
+                        if (newX >= 0 && newX < board.length && newY >= 0 && newY < board[0].length) {
+                            TileWrapper tileWrapper = board[newX][newY];
 
-                        // Check if the tile is not already occupied by a unit
-                        if (!isTileOccupied(board, newX, newY)) {
-                            validTiles.add(tileWrapper);
+                            // Check if the tile is not already occupied by a unit
+                            if (!isTileOccupied(board, newX, newY)) {
+                                validTiles.add(tileWrapper);
+                            }
                         }
                     }
                 }
@@ -85,6 +86,7 @@ public class AIPlayerController extends PlayerController {
 
         return validTiles;
     }
+
 
     private static boolean isTileOccupied(TileWrapper[][] board, int x, int y) {
 		// Check if there is a unit on the specified tile

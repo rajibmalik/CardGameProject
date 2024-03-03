@@ -8,6 +8,7 @@ import structures.GameState;
 import structures.basic.CardWrapper;
 import structures.basic.Hand;
 import structures.basic.Player;
+import structures.basic.UnitWrapper;
 
 /**
  * Indicates that the user has clicked an object on the game canvas, in this
@@ -28,6 +29,7 @@ public class CardClicked implements EventProcessor {
 			TileHighlightController.removeBoardHighlight(out, gameState);
 			int handPosition = message.get("position").asInt();
 			CardWrapper clickedCard = gameState.getPlayerHand().getCard(handPosition - 1);
+			System.out.println(clickedCard.getName());
 			
 
 			if (canPlayCard(gameState, clickedCard)) {
@@ -39,25 +41,35 @@ public class CardClicked implements EventProcessor {
 	}
 
 	public void setCardClicked(int handPosition, GameState gameState, CardWrapper clickedCard) {
-		Hand playerHand = gameState.getPlayerHand();
-		// Check if the clicked card is still in the player's hand
-		if (handPosition >= 1 && handPosition <= playerHand.getHand().size()) {
-
-			// Unclick all cards except the clicked one
-			for (CardWrapper card : playerHand.getHand()) {
-				if (card != clickedCard) {
-					card.setHasBeenClicked(false);
-				}
-			}
-
-			// Update the hasBeenClicked status of the clicked card
-			clickedCard.setHasBeenClicked(true);
-
-		} else {
-			// Handle invalid hand position (out of bounds)
-			System.out.println("Invalid hand position: " + handPosition);
-		}
+	    Hand playerHand = gameState.getPlayerHand();
+	    
+	    // Check if the clicked card is still in the player's hand
+	    if (handPosition >= 1 && handPosition <= playerHand.getHand().size()) {
+	        // Unclick all cards except the clicked one
+	        for (CardWrapper card : playerHand.getHand()) {
+	            if (card != null && card != clickedCard) {
+	                card.setHasBeenClicked(false);
+	            }
+	        }
+	        // make sure all units are unclicked
+	        for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
+	            if (unit != null) {
+	                unit.setHasBeenClicked(false);
+	            }
+	        }
+	        // Update the hasBeenClicked status of the clicked card
+	        if (clickedCard != null) {
+	            clickedCard.setHasBeenClicked(true);
+	        } else {
+	            // Handle the case where clickedCard is null
+	            System.out.println("Clicked card is null.");
+	        }
+	    } else {
+	        // Handle invalid hand position (out of bounds)
+	        System.out.println("Invalid hand position: " + handPosition);
+	    }
 	}
+
 
 	private static boolean canPlayCard(GameState gameState, CardWrapper clickedCard) {
 		if (clickedCard.getManaCost() <= gameState.getCurrentPlayer().getMana()) {

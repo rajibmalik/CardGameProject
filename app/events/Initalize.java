@@ -40,9 +40,20 @@ public class Initalize implements EventProcessor{
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
 		initializeBackEnd(out, gameState);
-		initializehumanPlayer(out, gameState);
 		initalizeAiPlayer(out, gameState);
+		initializehumanPlayer(out, gameState);
+		
 		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
+		
+		for(UnitWrapper unit : gameState.getHumanPlayer().getUnits()) {
+			System.out.println("Here are the human players units:");
+			System.out.println(unit.getName() + " on tile" + unit.getTile().getXpos());
+		}
+		
+		for(UnitWrapper unit : gameState.getAIPlayer().getUnits()) {
+			System.out.println("Here are the ai players units:");
+			System.out.println(unit.getName() + " on tile" + unit.getTile().getXpos());
+		}
 	}
 
 	public void initializeBackEnd(ActorRef out, GameState gameState) {
@@ -115,9 +126,11 @@ public class Initalize implements EventProcessor{
 			for (int j = 0; j < 5; j++) {
 				Tile tile = board[i][j].getTile();
 				BasicCommands.drawTile(out, tile, 0);
-				try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
+				try {Thread.sleep(5);} catch (InterruptedException e) {e.printStackTrace();}
 			}
 		}
+		
+		
 	}
 
 	public Player setPlayerAvatarBackend(GameState gameState, Unit unit) {
@@ -125,7 +138,7 @@ public class Initalize implements EventProcessor{
 
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		TileWrapper tileWrapper = board[1][2];
-		Avatar avatar = new Avatar(unit, "Human Player", 20, 2, humanPlayer, null, tileWrapper);
+		Avatar avatar = new Avatar(unit, "Human Avatar", 20, 2, humanPlayer, null, tileWrapper);
 
 		tileWrapper.setUnitWrapper(avatar);
 		tileWrapper.setHasUnit(true);
@@ -141,13 +154,13 @@ public class Initalize implements EventProcessor{
 		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.humanAvatar, 0, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 	
 		return unit;
@@ -174,13 +187,13 @@ public class Initalize implements EventProcessor{
 		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 0, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 
 		return unit;
 	}

@@ -1,5 +1,7 @@
 package structures.basic;
 import abilities.UnitAbility;
+import akka.actor.ActorRef;
+import structures.GameState;
 
 public class UnitWrapper {
     private Unit unit; // Unit reference to backend representation of a Unit
@@ -107,8 +109,8 @@ public class UnitWrapper {
         return this.name;
     }
 
-    public void useAbility() {
-        this.ability.applyAbility(this);
+    public void useAbility(ActorRef out, GameState gameState, UnitWrapper unit) {
+        this.ability.applyAbility(out,gameState,unit);
     }
 
     public UnitAbility getAbility() {

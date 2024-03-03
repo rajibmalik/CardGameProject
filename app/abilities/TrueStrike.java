@@ -1,5 +1,7 @@
 package abilities;
 
+import akka.actor.ActorRef;
+import structures.GameState;
 import structures.basic.Player;
 import structures.basic.TileWrapper;
 import structures.basic.UnitWrapper;
@@ -7,13 +9,14 @@ import structures.basic.UnitWrapper;
 public class TrueStrike implements SpellAbility {
 
     @Override
-    public void castSpell(Player player, TileWrapper targetTile) {
+    public void castSpell(ActorRef out,GameState gameState, TileWrapper targetTile) {
+    	Player currentPlayer = gameState.getCurrentPlayer();
 
         if (targetTile.getHasUnit()) {
             UnitWrapper targetUnit = targetTile.getUnit();
 
             // Check to make sure the unit is an enemy unit
-            if (!isEnemyUnit(player, targetUnit)) {
+            if (!isEnemyUnit(currentPlayer, targetUnit)) {
                 throw new IllegalArgumentException("You can only target enemy units with TrueStrike!");
             }
 

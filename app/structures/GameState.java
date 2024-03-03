@@ -116,7 +116,7 @@ public void resetAIUnitMovementAndAttack() {
 	}
 
 	public Board getBoard() {
-		return board;
+		return this.board;
 	}
 
 	public Hand getPlayerHand() {
@@ -159,6 +159,7 @@ public void resetAIUnitMovementAndAttack() {
 		if(unitWrapper.getHealth()<=0){
 			unitWrapper.getTile().setHasUnit(false);
 			unitWrapper.getTile().setUnitWrapper(null);
+			unitWrapper.setTile(null);
 			removeUnit(unitWrapper);
 		}
 	}
