@@ -11,11 +11,14 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import abilities.BeamShock;
 import abilities.DarkTerminus;
 import abilities.Deathwatch;
 import abilities.HornOfTheForsaken;
 import abilities.SpellAbility;
 import abilities.SummonWraithling;
+import abilities.SundropElixir;
+import abilities.TrueStrike;
 import abilities.UnitAbility;
 import abilities.WraithlingSwarm;
 import commands.BasicCommands;
@@ -119,6 +122,12 @@ public class Deck {
 			return ability = new  WraithlingSwarm();
 		} else if (name.equals("Horn of the Forsaken")) {
 			return ability = new  HornOfTheForsaken();
+		} else if (name.equals("Sundrop Elixir")) {
+			return ability = new SundropElixir();
+		} else if (name.equals("True Strike")) {
+			return ability = new TrueStrike();
+		} else if (name.equals("Beam Shock")) {
+			return ability = new BeamShock();
 		}
 			
 		return null;

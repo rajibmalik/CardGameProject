@@ -40,8 +40,8 @@ public class Initalize implements EventProcessor{
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
 		initializeBackEnd(out, gameState);
-		initalizeAiPlayer(out, gameState);
 		initializehumanPlayer(out, gameState);
+		initalizeAiPlayer(out, gameState);
 		
 		// CommandDemo.executeDemo(out); // this executes the command demo, comment out this when implementing your solution
 		
@@ -154,15 +154,14 @@ public class Initalize implements EventProcessor{
 		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.humanAvatar, 0, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
-	
 		return unit;
 	}
 
@@ -184,16 +183,16 @@ public class Initalize implements EventProcessor{
 	public Unit setAiAvatarFrontend (ActorRef out, GameState gameState) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		Tile tile = board[7][2].getTile();
-		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 0, Unit.class);
+		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 1, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		return unit;
 	}

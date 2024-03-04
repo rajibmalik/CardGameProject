@@ -43,15 +43,9 @@ public class GameState {
 
 	public void AITakeTurn(ActorRef out, GameState gameState) {
 		if (currentPlayer == getAIPlayer()) {
-			while (aiPlayerController.canPlayUnitCard(gameState) && (!aiPlayerController.getValidTiles(gameState).isEmpty())) {
-				System.out.println("AI TURN");
-				// play unit card with the highest mana
-				aiPlayerController.playUnitCard(out, gameState);
-			}
-			System.out.println("Ending turn");
+		aiPlayerController.takeTurn(out, gameState);
+		System.out.println("Ending turn");
 			
-			
-		aiPlayerController.endTurn(gameState);
 		gameState.getAIPlayerController().clearMana();
 		resetAIUnitMovementAndAttack();
 		BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());

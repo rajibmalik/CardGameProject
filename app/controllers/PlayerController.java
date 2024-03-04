@@ -109,4 +109,8 @@ public class PlayerController {
     public ArrayList<UnitWrapper> getUnits() {
         return player.getUnits();
     }
+
+    public void setUnits(ArrayList<UnitWrapper> units) {
+        this.player.setUnits(getUnits());
+    }
 }

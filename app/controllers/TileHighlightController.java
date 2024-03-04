@@ -182,4 +182,14 @@ public class TileHighlightController {
 		tile.setHighlightStatus(status);
 	}
 
+	public static void highlightTileAttacking(ActorRef out, Tile tile) {
+		BasicCommands.drawTile(out, tile, 2);
+		try {Thread.sleep(400);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+
+	public static void highlightTileNormal(ActorRef out, Tile tile) {
+		BasicCommands.drawTile(out, tile, 0);
+		try {Thread.sleep(400);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+
 }

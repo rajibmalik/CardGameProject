@@ -131,8 +131,6 @@ public class TileClicked implements EventProcessor {
 		if(getClickedUnit(gameState)!=null) {
 			System.out.println("The clicked unit is " + getClickedUnit(gameState).getName());
 		}
-		
-
 	}
 
 	private void handleTileClick(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
@@ -146,7 +144,6 @@ public class TileClicked implements EventProcessor {
 				UnitController.moveUnitFrontend(out, unitWrapper, tile);
 				TileHighlightController.removeBoardHighlight(out, gameState);
 				unclickAllUnits(gameState);
-
 			}
 		}
 	}
@@ -291,55 +288,14 @@ public class TileClicked implements EventProcessor {
 		}
 	}
 
-	// renders frontend representation of unit
 	public Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
-		String config = unitCard.getCard().getUnitConfig();
-
-		Unit unit = BasicObjectBuilders.loadUnit(config, UnitWrapper.nextId, Unit.class);
-		unit.setPositionByTile(tile);
-
-		BasicCommands.drawUnit(out, unit, tile);
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		BasicCommands.setUnitAttack(out, unit, unitCard.getAttack());
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		BasicCommands.setUnitHealth(out, unit, unitCard.getHealth());
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		Unit unit  = UnitController.renderUnit(out, unitCard, tile);
 
 		return unit;
 	}
 
-	// creates backend representation of unit
 	private void createUnit(Unit unit, CardWrapper cardWrapper, GameState gameState, TileWrapper tileWrapper) {
-		Tile tile = tileWrapper.getTile();
-
-		UnitCard unitCard = (UnitCard) cardWrapper;
-		String name = unitCard.getName();
-		int health = unitCard.getHealth();
-		int attack = unitCard.getAttack();
-		Player player = gameState.getCurrentPlayer();
-		UnitAbility unitAbility = unitCard.getUnitAbility();
-
-		UnitWrapper unitWrapper = new UnitWrapper(unit, name, health, attack, player, unitAbility, tileWrapper);
-		tileWrapper.setUnitWrapper(unitWrapper);
-		tileWrapper.setHasUnit(true);
-		unitWrapper.setTile(tileWrapper);
-		player.addUnit(unitWrapper);
-
-		System.out.println(unitWrapper);
+		UnitController.createUnitWrapper(unit, (UnitCard) cardWrapper, tileWrapper, gameState.getHumanPlayer());
 	}
 
 	private void removeCard(ActorRef out, GameState gameState, CardWrapper cardPlayed) {
