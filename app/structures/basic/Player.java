@@ -69,5 +69,9 @@ public class Player {
 	public ArrayList<UnitWrapper> getUnits() {
 		return this.units;
 	}
+
+	public void setUnits(ArrayList<UnitWrapper> units) {
+		this.units = units;
+	}
 	
 }

@@ -18,13 +18,14 @@ import structures.basic.UnitAnimationType;
 import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
 
 public class UnitController {
    
     public UnitController() {
     }
 
-    public Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
+    public static Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
         String config = unitCard.getCard().getUnitConfig();
 
 		Unit unit = BasicObjectBuilders.loadUnit(config, UnitWrapper.nextId, Unit.class);
@@ -45,13 +46,15 @@ public class UnitController {
 		return unit;
     }
 
-    public void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
+    public static void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
 		String name = unitCard.getName();
 		int health = unitCard.getHealth();
 		int attack = unitCard.getAttack();
 		UnitAbility unitAbility = unitCard.getUnitAbility();
 
 		UnitWrapper unitWrapper = new UnitWrapper(unit, name, health, attack, player, unitAbility, tileWrapper);
+		unitWrapper.setHasMoved(true);
+		unitWrapper.setHasAttacked(true);
 		tileWrapper.setUnitWrapper(unitWrapper);
 		tileWrapper.setHasUnit(true);
 		unitWrapper.setTile(tileWrapper);
