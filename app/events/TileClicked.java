@@ -150,47 +150,55 @@ public class TileClicked implements EventProcessor {
 			}
 		}
 	}
-
+	
 	private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
-		Player currentPlayer = gameState.getCurrentPlayer();
 		UnitWrapper attackingUnitWrapper = getClickedUnit(gameState);
-		Unit attackingUnit = attackingUnitWrapper.getUnit();
-
 		UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
-		Unit unitAttacked = unitWrapperAttacked.getUnit();
-
 		// Attack unit
-		UnitController.attackUnitBackend(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
-		UnitController.attackUnitFrontEnd(out, gameState, attackingUnit, unitAttacked, unitWrapperAttacked);
-
-		// Attacked unit Dies
-		if (unitWrapperAttacked.getHealth() <= 0) {
-			UnitController.unitDeathBackend(out,gameState, currentPlayer, unitWrapperAttacked);
-			UnitController.unitDeathFrontEnd(out, currentPlayer, unitAttacked);
-		} else if (unitWrapperAttacked.getHealth() > 0) {
-			// If attacked unit does not die, perform counter attack
-			UnitController.attackUnitBackend(out, gameState, unitWrapperAttacked, attackingUnitWrapper);
-			UnitController.attackUnitFrontEnd(out, gameState, unitAttacked, attackingUnit, attackingUnitWrapper);
-			// Counter attack results in attacking unit death
-			if (attackingUnitWrapper.getHealth() <= 0) {
-				UnitController.unitDeathBackend(out,gameState, currentPlayer, attackingUnitWrapper);
-				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnit);
-
-			}
-		}
-
-		unclickAllUnits(gameState);
-
-		// Render idle movement
-		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.idle);
-		BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.idle);
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
 
 	}
+// old logic before refactor
+//	private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
+//		Player currentPlayer = gameState.getCurrentPlayer();
+//		UnitWrapper attackingUnitWrapper = getClickedUnit(gameState);
+//		Unit attackingUnit = attackingUnitWrapper.getUnit();
+//
+//		UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
+//		Unit unitAttacked = unitWrapperAttacked.getUnit();
+//
+//		// Attack unit
+//		UnitController.attackUnitBackend(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+//		UnitController.attackUnitFrontEnd(out, gameState, attackingUnit, unitAttacked, unitWrapperAttacked);
+//
+//		// Attacked unit Dies
+//		if (unitWrapperAttacked.getHealth() <= 0) {
+//			UnitController.unitDeathBackend(out,gameState, currentPlayer, unitWrapperAttacked);
+//			UnitController.unitDeathFrontEnd(out, currentPlayer, unitAttacked);
+//		} else if (unitWrapperAttacked.getHealth() > 0) {
+//			// If attacked unit does not die, perform counter attack
+//			UnitController.attackUnitBackend(out, gameState, unitWrapperAttacked, attackingUnitWrapper);
+//			UnitController.attackUnitFrontEnd(out, gameState, unitAttacked, attackingUnit, attackingUnitWrapper);
+//			// Counter attack results in attacking unit death
+//			if (attackingUnitWrapper.getHealth() <= 0) {
+//				UnitController.unitDeathBackend(out,gameState, currentPlayer, attackingUnitWrapper);
+//				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnit);
+//
+//			}
+//		}
+//
+//		unclickAllUnits(gameState);
+//
+//		// Render idle movement
+//		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.idle);
+//		BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.idle);
+//		try {
+//			Thread.sleep(100);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private boolean hasCardBeenClicked(GameState gameState) {
 		for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
