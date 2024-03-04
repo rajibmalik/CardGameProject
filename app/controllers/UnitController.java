@@ -58,6 +58,47 @@ public class UnitController {
 		player.addUnit(unitWrapper);
     }
     
+	public static void attackUnit(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
+		Player currentPlayer = gameState.getCurrentPlayer();
+		Unit attackingUnit = attackingUnitWrapper.getUnit();
+		Unit unitAttacked = unitWrapperAttacked.getUnit();
+		attackUnitBackend(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+		attackUnitFrontEnd(out, gameState, attackingUnit, unitAttacked, unitWrapperAttacked);
+
+		// Attacked unit Dies
+		if (unitWrapperAttacked.getHealth() <= 0) {
+			unitDeathBackend(out, gameState, currentPlayer, unitWrapperAttacked);
+			unitDeathFrontEnd(out, currentPlayer, unitAttacked);
+		} else if (unitWrapperAttacked.getHealth() > 0) {
+			// If attacked unit does not die, perform counter attack
+			attackUnitBackend(out, gameState, unitWrapperAttacked, attackingUnitWrapper);
+			attackUnitFrontEnd(out, gameState, unitAttacked, attackingUnit, attackingUnitWrapper);
+			// Counter attack results in attacking unit death
+			if (attackingUnitWrapper.getHealth() <= 0) {
+				UnitController.unitDeathBackend(out, gameState, currentPlayer, attackingUnitWrapper);
+				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnit);
+
+			}
+		}
+
+		unclickAllUnits(gameState);
+
+		// Render idle movement
+		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.idle);
+		BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.idle);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void unclickAllUnits(GameState gameState) {
+		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
+			unit.setHasBeenClicked(false);
+		}
+	}
+    
     
     public static void attackUnitBackend(ActorRef out,GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
 		attackingUnitWrapper.setHasAttacked(true);
