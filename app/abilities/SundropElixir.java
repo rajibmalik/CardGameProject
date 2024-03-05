@@ -14,7 +14,11 @@ public class SundropElixir implements SpellAbility {
 		if (targetTile.getHasUnit()) {
             UnitWrapper targetUnit = targetTile.getUnit();
             if (!(targetUnit instanceof Avatar)) {
-                targetUnit.increaseHealth(4);
+                if (targetUnit.getHealth() + 4 >= targetUnit.getMaxHealth()) {
+                    targetUnit.setHealth(targetUnit.getMaxHealth());
+                } else {
+                    targetUnit.increaseHealth(4);
+                }
             } else {
                 // Handle the case when the target unit is an Avatar
                 System.out.println("Cannot target the Avatar with Sundrop Elixir spell.");

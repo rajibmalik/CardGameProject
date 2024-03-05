@@ -131,7 +131,6 @@ public class Deck {
 		}
 			
 		return null;
-
 	}
 
 	public CardWrapper getTopCard() {

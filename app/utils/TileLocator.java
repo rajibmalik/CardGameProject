@@ -6,6 +6,7 @@ import java.util.List;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
+import structures.basic.Avatar;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
 import structures.basic.UnitWrapper;
@@ -22,9 +23,10 @@ public class TileLocator {
 		}
 	  
 
+		}
+	  
 	    for (int i = -1; i <= 1; i++) {
 			TileWrapper unitPosition = unit.getTile();
-
 			if (unitPosition != null) {
 				for (int j = -1; j <= 1; j++) {
 					int newX = unitPosition.getXpos() + i;
@@ -38,9 +40,6 @@ public class TileLocator {
 				}
 
 			}
-
-
-	       
 	    }
 	    return tilesWithinRange;
 	}
@@ -100,10 +99,25 @@ public class TileLocator {
 
 		return enemyUnits;
 	}
+
+	public static TileWrapper getHumanAvatarTile(GameState gameState) {
+        ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
+        for (UnitWrapper unitWrapper : units) {
+            if (unitWrapper instanceof Avatar) {
+                return unitWrapper.getTile();
+            }
+        }
+        return null; // Return null if the avatar tile is not found
+    }
+
+
 	
 
 
 	
 }
+
+
+
 
 

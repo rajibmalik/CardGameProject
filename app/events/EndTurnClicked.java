@@ -39,15 +39,7 @@ public class EndTurnClicked implements EventProcessor {
 			BasicCommands.setPlayer1Mana(out, currentPlayer);
 			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 		} 
-		// else {
-		// 	gameState.getAIPlayerController().clearMana();
-		// 	BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
-		// 	try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-		// 	gameState.getHumanPlayerController().nextTurn();
-		// 	BasicCommands.setPlayer2Mana(out, currentPlayer);
-		// 	try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-		// }
-
+	
 		// Switch to the next player
 		switchPlayer(out, gameState, currentPlayer);
 

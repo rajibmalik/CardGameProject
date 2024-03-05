@@ -2,11 +2,16 @@ package controllers;
 
 import java.util.ArrayList;
 
+import akka.actor.ActorRef;
+import commands.BasicCommands;
+import structures.GameState;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
+import structures.basic.SpellCard;
 import structures.basic.TileWrapper;
+import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 
 public class PlayerController {
@@ -104,6 +109,14 @@ public class PlayerController {
     
         // Remove cardWrapper if the cardWrapper id is equal to id
         hand.removeIf(cardWrapper -> cardWrapper.getId() == id);
+    }
+
+    public void removeCardFromHand(CardWrapper cardWrapper) {
+        ArrayList<CardWrapper> hand = player.getHand().getHand();
+
+        if (hand.contains(cardWrapper)) {
+            hand.remove(cardWrapper);
+        }
     }
 
     public ArrayList<UnitWrapper> getUnits() {
