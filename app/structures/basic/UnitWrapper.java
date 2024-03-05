@@ -6,6 +6,7 @@ import structures.GameState;
 public class UnitWrapper {
     private Unit unit; // Unit reference to backend representation of a Unit
     private String name; 
+    private final int maxHealth;
     private int health;
     private int attack;
     private TileWrapper tile;
@@ -35,6 +36,7 @@ public class UnitWrapper {
         this.id = nextId++; // id is assigned to value of nextId, then nextId incremented  
         this.ability = ability;
         this.tile=tile;
+        this.maxHealth = health;
     }
 
     public int getId() {
@@ -62,6 +64,10 @@ public class UnitWrapper {
 
     public int getHealth() {
         return this.health;
+    }
+
+    public int getMaxHealth() {
+        return this.maxHealth;
     }
 
     public void setAttack(int attack) {

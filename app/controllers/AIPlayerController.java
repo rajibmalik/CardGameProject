@@ -2,9 +2,7 @@ package controllers;
 
 import java.util.ArrayList;
 import akka.actor.ActorRef;
-import commands.BasicCommands;
 import structures.GameState;
-import structures.basic.Avatar;
 import structures.basic.CardWrapper;
 import structures.basic.Player;
 import structures.basic.SpellCard;
@@ -22,14 +20,22 @@ public class AIPlayerController extends PlayerController {
     }
 
     public void takeTurn(ActorRef out, GameState gameState) {
+        ArrayList<CardWrapper> hand = super.getPlayerHand().getHand();
+        // test 
+        System.out.println("AI Player Hand:");
+        for (CardWrapper cardWrapper:hand) {
+            System.out.print(cardWrapper.getName() + ", ");
+        }
+        System.out.println();
+
         playUnitCard(out, gameState);
-        // playSpellCard(out, gameState);
+        playSpellCard(out, gameState);
         attackUnits(out, gameState);
         endTurn(gameState);
     }
 
     public void playUnitCard(ActorRef out, GameState gameState) {
-        if (canPlayCard(gameState, true)) {
+        while (canPlayCard(gameState, true)) {
             UnitCard unitCard = getLowestCostUnitCard();
           
             // ArrayList<TileWrapper> tileWrappers = getValidTiles(gameState);
@@ -37,17 +43,45 @@ public class AIPlayerController extends PlayerController {
             TileWrapper tileWrapper = tileWrappers.get(0);
             Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
 
-            UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getCurrentPlayer());
-            removeCardFromHand(unitCard);
-            deductAndRenderMana(gameState, out, unitCard);
-        } 
+            UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
+            super.removeCardFromHand(unitCard);
+            super.deductAndRenderMana(gameState, out, unitCard);
+        }
     }
 
-    // test 
     public void playSpellCard(ActorRef out, GameState gameState) {
-        if (canPlayCard(gameState, false)) {
-            SpellCard spellCard = getLowestCostSpellCard();
+        System.out.println("Checking if can play spell card");
+        ArrayList<SpellCard> spellCards = getSpellCards();
+
+        for (SpellCard spellCard: spellCards) {
+            String spellName = spellCard.getName();
+           
+            if (spellName.equals("Beamshock") && SpellController.canPlayAttackingSpell(gameState)){
+                playAndRemoveSpell(out, gameState, spellCard);
+            } else if (spellName.equals("Sundrop Elixir") && SpellController.canPlaySundropElixir(gameState)) {
+                playAndRemoveSpell(out, gameState, spellCard);
+            } else if (spellName.equals("Truestrike") && SpellController.canPlayAttackingSpell(gameState)) {
+                playAndRemoveSpell(out, gameState, spellCard);
+            }
+        }       
+    }
+
+    public void playAndRemoveSpell(ActorRef out, GameState gameState, SpellCard spellCard) {
+        switch (spellCard.getName()) {
+            case "Beamshock":
+                System.out.println("Playing Beamshock");
+                SpellController.playBeamShock(out, gameState, spellCard);
+                break;
+            case "Sundrop Elixir":
+                System.out.println("Sundrop Elixir");
+                SpellController.playSundropElixir(out, gameState, spellCard);
+                break;  
+            case "Truestrike":
+                System.out.println("Truestrike");
+                SpellController.playTrueStrike(out, gameState, spellCard);
+                break;
         }
+        super.removeCardFromHand(spellCard);
     }
 
     public void attackUnits(ActorRef out, GameState gameState) {
@@ -68,38 +102,22 @@ public class AIPlayerController extends PlayerController {
                 }
             }
         }
-        setUnits(AIunits);
-    }
-
-    public Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
-        Unit unit = UnitController.renderUnit(out, unitCard, tile);
-		return unit;
-    }
-
-    private TileWrapper getHumanAvatarTile(GameState gameState) {
-        ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
-        for (UnitWrapper unitWrapper : units) {
-            if (unitWrapper instanceof Avatar) {
-                return unitWrapper.getTile();
-            }
-        }
-        return null; // Return null if the avatar tile is not found
+        super.setUnits(AIunits);
     }
 
     public boolean canPlayCard(GameState gameState, boolean isUnitCard) {
         if (isUnitCard) {
             return (super.getMana() >= getLowestCostUnitCardPrice() && (!TileLocator.getValidSpawnTiles(gameState).isEmpty()));
         } else {
-            return (super.getMana() >= getLowestCostSpellCard().getManaCost());
+            if (super.getLowestCostSpellCard() != null) {
+                return (super.getMana() >= getLowestCostSpellCard().getManaCost());
+            }
+            return false;
         }
     }
 
-    public void setUnits(GameState gameState, ArrayList<UnitWrapper> units) {
-        super.setUnits(units);
-    }
-
     private int getLowestCostUnitCardPrice() {
-        ArrayList<UnitCard> unitCards = getUnitCards();
+        ArrayList<UnitCard> unitCards = super.getUnitCards();
         int lowestManaCost = Integer.MAX_VALUE;
         if (!unitCards.isEmpty()) {
             lowestManaCost = unitCards.get(0).getManaCost();
@@ -110,12 +128,11 @@ public class AIPlayerController extends PlayerController {
                 lowestManaCost = unitCard.getManaCost();
             }
         }
-
         return lowestManaCost;
     }
 
     private UnitCard getHighestCostUnitCard() {
-        ArrayList<UnitCard> unitCards = getUnitCards();
+        ArrayList<UnitCard> unitCards = super.getUnitCards();
         UnitCard highestManaCost = unitCards.get(0);
 
         for (UnitCard unitCard: unitCards) {
@@ -123,12 +140,11 @@ public class AIPlayerController extends PlayerController {
                 highestManaCost = unitCard;
             }
         }
-
         return highestManaCost;
     }
 
     private UnitCard getLowestCostUnitCard() {
-        ArrayList<UnitCard> unitCards = getUnitCards();
+        ArrayList<UnitCard> unitCards = super.getUnitCards();
         UnitCard lowestManaCost = unitCards.get(0);
 
         for (UnitCard unitCard: unitCards) {
@@ -136,72 +152,12 @@ public class AIPlayerController extends PlayerController {
                 lowestManaCost = unitCard;
             }
         }
-
         return lowestManaCost;
-    }
-
-    private ArrayList<UnitCard> getUnitCards() {
-        ArrayList<UnitCard> unitCards = new ArrayList<>();
-
-        for (CardWrapper cardWrapper: super.getPlayerHand().getHand()) {
-            if (cardWrapper instanceof UnitCard) {
-                UnitCard unitCard = (UnitCard) cardWrapper;
-                unitCards.add(unitCard);
-            }
-        }
-
-        return unitCards;
-    }
-
-    private ArrayList<SpellCard> getSpellCards() {
-        ArrayList<SpellCard> spellCards = new ArrayList<>();
-
-        for (CardWrapper cardWrapper: super.getPlayerHand().getHand()) {
-            if (cardWrapper instanceof SpellCard) {
-                SpellCard spellCard = (SpellCard) cardWrapper;
-                spellCards.add(spellCard);
-            }
-        }
-
-        return spellCards;
-    }
-
-    private SpellCard getLowestCostSpellCard() {
-        ArrayList<SpellCard> spellCards = getSpellCards();
-        SpellCard lowestManaCost = spellCards.get(0);
-
-        for (SpellCard spellCard: spellCards) {
-            if (spellCard.getManaCost() < lowestManaCost.getManaCost()) {
-                lowestManaCost = spellCard;
-            }
-        }
-
-        return lowestManaCost;
-    }
-
-    public void removeCardFromHand(CardWrapper cardWrapper) {
-        ArrayList<CardWrapper> hand = super.getPlayerHand().getHand();
-
-        if (hand.contains(cardWrapper)) {
-            hand.remove(cardWrapper);
-        }
     }
 
     public void endTurn(GameState gameState) {
         gameState.switchPlayer();
         super.drawCard();
     }
-
-    private void deductAndRenderMana(GameState gameState, ActorRef out, CardWrapper cardWrapper) {
-		deductManaFromBackEnd(gameState, cardWrapper);
-		renderManaOnFrontEnd(out, gameState);
-	}
-
-	private void deductManaFromBackEnd(GameState gameState, CardWrapper cardWrapper) {
-        AIPlayerController.deductMana(gameState.getCurrentPlayer(), cardWrapper);
-	}
-
-	private void renderManaOnFrontEnd(ActorRef out, GameState gameState) {
-		BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
-	}
 }
+

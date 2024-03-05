@@ -54,18 +54,6 @@ public class Player {
 		this.units.add(unit);
 	}
 
-    // public void removeUnit(UnitWrapper unit) {	// this should be in a controller Class
-	// 	Iterator<UnitWrapper> iterator = this.units.iterator();
-
-	// 	while (iterator.hasNext()) {
-	// 		UnitWrapper unitInstance = iterator.next();
-	// 		if (unitInstance.getId() == unit.getId()) {
-	// 			iterator.remove();
-	// 			break;
-	// 		}
-	// 	}
-    // }
-
 	public ArrayList<UnitWrapper> getUnits() {
 		return this.units;
 	}
