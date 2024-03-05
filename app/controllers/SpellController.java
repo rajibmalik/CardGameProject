@@ -16,26 +16,27 @@ public class SpellController {
         UnitWrapper targetUnit = null;
 
         for (UnitWrapper unitWrapper:humanUnits) {
-            if (unitWrapper.getName() != "Human Avatar") {
+            if (unitWrapper.getName() != "Human Avatar" && targetUnit != null && targetUnit.getTile() != null) {
                 targetUnit = unitWrapper;
+                BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 2);
+                try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+        
+                spellCard.applySpellAbility(out, gameState, targetUnit.getTile());
+        
+                if (targetUnit.getHealth() <= 0) {
+                    BasicCommands.deleteUnit(out, targetUnit.getUnit());
+                    try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+                } else {
+                    BasicCommands.setUnitHealth(out, targetUnit.getUnit(), targetUnit.getHealth());
+                    try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+                }
+        
+                BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 0);
+                try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
             }
         }
 
-        BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 2);
-        try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
-
-        spellCard.applySpellAbility(out, gameState, targetUnit.getTile());
-
-        if (targetUnit.getHealth() <= 0) {
-            BasicCommands.deleteUnit(out, targetUnit.getUnit());
-            try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
-        } else {
-            BasicCommands.setUnitHealth(out, targetUnit.getUnit(), targetUnit.getHealth());
-            try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
-        }
-
-        BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 0);
-        try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+       
     }
 
     public static void playSundropElixir(ActorRef out, GameState gameState, SpellCard spellCard) {
@@ -95,7 +96,7 @@ public class SpellController {
         ArrayList<UnitWrapper> humanUnits = gameState.getHumanPlayer().getUnits();
         
         for(UnitWrapper unitWrapper: humanUnits) {
-            if (!unitWrapper.getName().equals("Human Avatar")) {
+            if (!unitWrapper.getName().equals("Human Avatar") && unitWrapper.getHealth() > 0 && unitWrapper.getTile() != null) {
                 return true;
             }
         }

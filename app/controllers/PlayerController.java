@@ -126,4 +126,54 @@ public class PlayerController {
     public void setUnits(ArrayList<UnitWrapper> units) {
         this.player.setUnits(getUnits());
     }
+
+    public ArrayList<SpellCard> getSpellCards() {
+        ArrayList<SpellCard> spellCards = new ArrayList<>();
+
+        for (CardWrapper cardWrapper: this.player.getHand().getHand()) {
+            if (cardWrapper instanceof SpellCard) {
+                SpellCard spellCard = (SpellCard) cardWrapper;
+                spellCards.add(spellCard);
+            }
+        }
+
+        return spellCards;
+    }
+
+    public ArrayList<UnitCard> getUnitCards() {
+        ArrayList<UnitCard> unitCards = new ArrayList<>();
+
+        for (CardWrapper cardWrapper: this.player.getHand().getHand()) {
+            if (cardWrapper instanceof UnitCard) {
+                UnitCard unitCard = (UnitCard) cardWrapper;
+                unitCards.add(unitCard);
+            }
+        }
+
+        return unitCards;
+    }
+
+    public SpellCard getLowestCostSpellCard() {
+        ArrayList<SpellCard> spellCards = getSpellCards();
+        if (spellCards.isEmpty()) {
+            return null;
+        }
+    
+        SpellCard lowestManaCost = spellCards.get(0);
+
+        for (SpellCard spellCard: spellCards) {
+            if (spellCard.getManaCost() < lowestManaCost.getManaCost()) {
+                lowestManaCost = spellCard;
+            }
+        }
+
+        return lowestManaCost;
+    }
+
+     public void deductAndRenderMana(GameState gameState, ActorRef out, CardWrapper cardWrapper) {
+        deductMana(gameState.getCurrentPlayer(), cardWrapper);
+        BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
+        try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();} // these cause processing to wait for a number of milliseconds.
+	}
+    
 }
