@@ -53,8 +53,14 @@ public class UnitController {
 		UnitAbility unitAbility = unitCard.getUnitAbility();
 
 		UnitWrapper unitWrapper = new UnitWrapper(unit, name, health, attack, player, unitAbility, tileWrapper);
-		unitWrapper.setHasMoved(true);
-		unitWrapper.setHasAttacked(true);
+		if (unitWrapper.getName().equals("Saberspine Tiger")) {
+			unitWrapper.setHasMoved(false);
+			unitWrapper.setHasAttacked(false);
+		} else {
+			unitWrapper.setHasMoved(true);
+			unitWrapper.setHasAttacked(true);
+		}
+		
 		tileWrapper.setUnitWrapper(unitWrapper);
 		tileWrapper.setHasUnit(true);
 		unitWrapper.setTile(tileWrapper);
@@ -139,6 +145,8 @@ public class UnitController {
 	            unit.useAbility(out, gameState, unit);
 	        }
 	    }
+
+		
 	}
 
 	public static void unitDeathFrontEnd(ActorRef out, Player currentPlayer, Unit unitDying) {

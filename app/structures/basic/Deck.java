@@ -124,9 +124,9 @@ public class Deck {
 			return ability = new  HornOfTheForsaken();
 		} else if (name.equals("Sundrop Elixir")) {
 			return ability = new SundropElixir();
-		} else if (name.equals("True Strike")) {
+		} else if (name.equals("Truestrike")) {
 			return ability = new TrueStrike();
-		} else if (name.equals("Beam Shock")) {
+		} else if (name.equals("Beamshock")) {
 			return ability = new BeamShock();
 		}
 			

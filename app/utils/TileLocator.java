@@ -22,9 +22,6 @@ public class TileLocator {
 
 		}
 	  
-
-		}
-	  
 	    for (int i = -1; i <= 1; i++) {
 			TileWrapper unitPosition = unit.getTile();
 			if (unitPosition != null) {
@@ -110,12 +107,33 @@ public class TileLocator {
         return null; // Return null if the avatar tile is not found
     }
 
+	public static List<TileWrapper> getValidTilesAdjacentToHumanAvatar(GameState gameState) {
+		TileWrapper humanAvatar = TileLocator.getHumanAvatarTile(gameState);
+		TileWrapper [][] board = gameState.getBoard().getBoard();
+
+		List<TileWrapper> validTiles = TileLocator.getAdjacentTiles(board, humanAvatar.getUnit());
+		ArrayList<TileWrapper> tilesWithoutUnits = new ArrayList<>();
+
+		for (TileWrapper tileWrapper : validTiles) {
+			if (!tileWrapper.getHasUnit()) {
+				tilesWithoutUnits.add(tileWrapper);
+			}
+		}
+
+		System.out.println("NUMBER OF VALID TILES: " + validTiles.size()); // test
+
+		return tilesWithoutUnits;
+	}
+
 
 	
 
 
 	
 }
+
+
+
 
 
 

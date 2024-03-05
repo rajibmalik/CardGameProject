@@ -1,6 +1,8 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import akka.actor.ActorRef;
 import structures.GameState;
 import structures.basic.CardWrapper;
@@ -24,7 +26,7 @@ public class AIPlayerController extends PlayerController {
         // test 
         System.out.println("AI Player Hand:");
         for (CardWrapper cardWrapper:hand) {
-            System.out.print(cardWrapper.getName() + ", ");
+            System.out.print(cardWrapper.getName() + ", " );
         }
         System.out.println();
 
@@ -34,16 +36,40 @@ public class AIPlayerController extends PlayerController {
         endTurn(gameState);
     }
 
+    // public void playUnitCard(ActorRef out, GameState gameState) {
+    //     while (canPlayCard(gameState, true)) {
+    //         UnitCard unitCard = getLowestCostUnitCard();
+          
+    //         // ArrayList<TileWrapper> tileWrappers = getValidTiles(gameState);
+    //         ArrayList<TileWrapper> tileWrappers = TileLocator.getValidSpawnTiles(gameState);
+    //         TileWrapper tileWrapper = tileWrappers.get(0);
+    //         Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
+
+    //         UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
+    //         super.removeCardFromHand(unitCard);
+    //         super.deductAndRenderMana(gameState, out, unitCard);
+    //     }
+    // }
+
     public void playUnitCard(ActorRef out, GameState gameState) {
         while (canPlayCard(gameState, true)) {
             UnitCard unitCard = getLowestCostUnitCard();
-          
-            // ArrayList<TileWrapper> tileWrappers = getValidTiles(gameState);
-            ArrayList<TileWrapper> tileWrappers = TileLocator.getValidSpawnTiles(gameState);
-            TileWrapper tileWrapper = tileWrappers.get(0);
-            Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
 
-            UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
+            List<TileWrapper> tileWrappers = new ArrayList<>();
+
+            if (unitCard.getName().equals("Young Flamewing") && !TileLocator.getValidTilesAdjacentToHumanAvatar(gameState).isEmpty()) {
+                tileWrappers = TileLocator.getValidTilesAdjacentToHumanAvatar(gameState);
+                TileWrapper tileWrapper = tileWrappers.get(0);
+                Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
+                UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
+            } else {
+                tileWrappers = TileLocator.getValidSpawnTiles(gameState);
+                TileWrapper tileWrapper = tileWrappers.get(0);
+                Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
+                UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
+            }
+          
+        
             super.removeCardFromHand(unitCard);
             super.deductAndRenderMana(gameState, out, unitCard);
         }
@@ -87,6 +113,12 @@ public class AIPlayerController extends PlayerController {
     public void attackUnits(ActorRef out, GameState gameState) {
         System.out.println("Attacking human units");
         ArrayList<UnitWrapper> AIunits = new ArrayList<>(gameState.getAIPlayer().getUnits());
+
+        // test 
+
+        for (UnitWrapper unitWrapper:AIunits) {
+            System.out.println(unitWrapper.getName() + ", " + "has attacked " + unitWrapper.getHasAttacked() + " has moved " + unitWrapper.getHasMoved());
+        }
        
         for(UnitWrapper AIUnit: AIunits) {
             System.out.println(AIUnit.getName() + ", " + AIUnit.getHasAttacked()); // test 
@@ -160,4 +192,3 @@ public class AIPlayerController extends PlayerController {
         super.drawCard();
     }
 }
-
