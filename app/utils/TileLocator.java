@@ -41,6 +41,22 @@ public class TileLocator {
 	    return tilesWithinRange;
 	}
 
+	public static List<TileWrapper> getAdjacentTilesWithProvoke(TileWrapper[][] board, UnitWrapper unit) {
+		List<TileWrapper> tileWrappers = getAdjacentTiles(board, unit);
+		List<TileWrapper> adjacentTiles = new ArrayList<TileWrapper>();
+
+		for (TileWrapper tileWrapper:tileWrappers) {
+			if(tileWrapper.getHasUnit()) {
+				if (tileWrapper.getUnit().getName().equals("Swamp Entangler")
+					   ||tileWrapper.getUnit().getName().equals("Silverguard Knight") && tileWrapper.getUnit().getHealth() > 0) {
+						adjacentTiles.add(tileWrapper);
+					}
+			}
+		}
+
+		return adjacentTiles;
+	}
+
 	public static ArrayList<TileWrapper> getAdjacentTilesToPlayerUnits(GameState gameState) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
         ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();

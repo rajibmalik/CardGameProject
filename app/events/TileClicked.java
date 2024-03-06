@@ -1,6 +1,7 @@
 package events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -26,6 +27,7 @@ import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
 import utils.OrderedCardLoader;
+import utils.TileLocator;
 import abilities.UnitAbility;
 
 /**
@@ -104,11 +106,18 @@ public class TileClicked implements EventProcessor {
 		// highlight tiles for movement			
 		if (unitWrapper != null && unitWrapper.getHasMoved() == false && unitWrapper.getHasAttacked() == false
 				&& currentPlayer.getUnits().contains(unitWrapper)) {
-			System.out.println("Tiles highlighted for movement");
-			TileHighlightController.setUnitMovementTileHighlight(out, gameState, unitWrapper);
-			TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
-			tileWrapper.getUnit().setHasBeenClicked(true);
-
+			
+			if (TileLocator.getAdjacentTilesWithProvoke(board, unitWrapper).isEmpty()) {
+				System.out.println("Tiles highlighted for movement");
+				TileHighlightController.setUnitMovementTileHighlight(out, gameState, unitWrapper);
+				TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			} else {
+				System.out.println("Tiles highlighted for movement");
+				TileHighlightController.highlightProvokeEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			}
+			
 			// testing avatar bug
 			System.out.println("Here are the human players units:");
 			for (UnitWrapper unit : gameState.getHumanPlayer().getUnits()) {
@@ -123,8 +132,13 @@ public class TileClicked implements EventProcessor {
 			// If the unit has moved but not yet attacked, then highlight enemies in range
 		} else if (unitWrapper != null && unitWrapper.getHasMoved() == true && unitWrapper.getHasAttacked() == false
 				&& currentPlayer.getUnits().contains(unitWrapper)) {
-			TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
-			tileWrapper.getUnit().setHasBeenClicked(true);
+			if (TileLocator.getAdjacentTilesWithProvoke(board, unitWrapper).isEmpty()) {
+				TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			} else {
+				TileHighlightController.highlightProvokeEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			}
 		}
 		
 		//testing
@@ -155,6 +169,14 @@ public class TileClicked implements EventProcessor {
 		UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
 
 	}
+
+	private boolean adjacentTilesHaveProvoke(GameState gameState, UnitWrapper unit) {
+		if (!TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), unit).isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
 // old logic before refactor
 //	private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
 //		Player currentPlayer = gameState.getCurrentPlayer();

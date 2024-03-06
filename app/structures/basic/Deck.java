@@ -21,6 +21,7 @@ import abilities.SundropElixir;
 import abilities.TrueStrike;
 import abilities.UnitAbility;
 import abilities.WraithlingSwarm;
+import abilities.Zeal;
 import commands.BasicCommands;
 import utils.OrderedCardLoader;
 
@@ -97,6 +98,8 @@ public class Deck {
 			return ability = new Deathwatch(0, 0);
 		} else if (name.equals("Shadowdancer")) {
 			return ability = new Deathwatch(0, 1);
+		} else if (name.equals("Silverguard Knight")) {
+			return ability = new Zeal();
 		}
 		return ability;
 
