@@ -16,12 +16,22 @@ import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.TileLocator;
 
+/**
+ * This class is responsible for the AI decision making during the AI players turn. This includes
+ * playing unit cards, spell cards, moving units, attacking units and ending turn.
+ * @author Rajib Malik
+ */
+
 public class AIPlayerController extends PlayerController {
     
     public AIPlayerController(Player player) {
         super(player);
     }
 
+   /**
+     * This method executes the AI player's turn, performing actions such as playing a unit card, 
+     * playing a spell card, moving units, attacking units and ending the turn.
+    */
     public void takeTurn(ActorRef out, GameState gameState) {
         ArrayList<CardWrapper> hand = super.getPlayerHand().getHand();
         // test 
@@ -33,13 +43,17 @@ public class AIPlayerController extends PlayerController {
 
         playUnitCard(out, gameState);
         playSpellCard(out, gameState);
-        // test
         moveUnits(out, gameState);
-        
         attackUnits(out, gameState);
         endTurn(gameState);
     }
 
+    /**
+     * This method executes logic for playing a UnitCard. 
+     * Checks for valid tile for placement using TileLocator, 
+     * if there is a valid tile, UnitController updates the front and backend representing unit creation. 
+     * If played, card is removed from the hand alongisde appropriate amount of mana from the player.
+    */
     public void playUnitCard(ActorRef out, GameState gameState) {
         while (canPlayCard(gameState, true)) {
             UnitCard unitCard = getLowestCostUnitCard();
@@ -58,12 +72,17 @@ public class AIPlayerController extends PlayerController {
                 UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
             }
           
-        
             super.removeCardFromHand(unitCard);
             super.deductAndRenderMana(gameState, out, unitCard);
         }
     }
 
+    /**
+     * Checks if SpellCards in the players hand can be played, 
+     * static method from SpellController.
+     * If it can be played, plays the spell updating the front and backend, 
+     * removes the card from the hand and the approrpiate mana from the player
+    */
     public void playSpellCard(ActorRef out, GameState gameState) {
         System.out.println("Checking if can play spell card");
         ArrayList<SpellCard> spellCards = getSpellCards();
@@ -81,6 +100,13 @@ public class AIPlayerController extends PlayerController {
         }       
     }
 
+    /**
+      * Executes logic for playing a SpellCard.
+      * If able to play a SpellCard, applys it to both frontend and backend using static method from SpellController.
+      * Then deducts mana before removing it from the hand.
+     * @param spelLCard reference to a SpellCard object 
+    */
+
     public void playAndRemoveSpell(ActorRef out, GameState gameState, SpellCard spellCard) {
         switch (spellCard.getName()) {
             case "Beamshock":
@@ -94,24 +120,26 @@ public class AIPlayerController extends PlayerController {
                 SpellController.playSundropElixir(out, gameState, spellCard);
                 break;  
             case "Truestrike":
-                 BasicCommands.addPlayer1Notification(out, "Playing Truestrike", 1);
+                BasicCommands.addPlayer1Notification(out, "Playing Truestrike", 1);
                 System.out.println("Truestrike");
                 SpellController.playTrueStrike(out, gameState, spellCard);
                 break;
         }
         super.removeCardFromHand(spellCard);
+        super.deductAndRenderMana(gameState, out, spellCard);
     }
 
+    /**
+     * Executes logic for unit attacks.
+     * Iterates through the player's units to check if they can attack.
+     * If they can attack, retrieves adjacent enemy units using TileLocator.
+     * Highlights the attacking unit's tile and updates front and backends
+     * after damage calculation if an enemy unit is found.
+    */
     public void attackUnits(ActorRef out, GameState gameState) {
         System.out.println("Attacking human units");
         ArrayList<UnitWrapper> AIunits = new ArrayList<>(gameState.getAIPlayer().getUnits());
 
-        // test 
-
-        for (UnitWrapper unitWrapper:AIunits) {
-            System.out.println(unitWrapper.getName() + ", " + "has attacked " + unitWrapper.getHasAttacked() + " has moved " + unitWrapper.getHasMoved());
-        }
-       
         for(UnitWrapper AIUnit: AIunits) {
             System.out.println(AIUnit.getName() + ", " + AIUnit.getHasAttacked()); // test 
             if (!AIUnit.getHasAttacked()) {
@@ -129,6 +157,10 @@ public class AIPlayerController extends PlayerController {
         super.setUnits(AIunits);
     }
 
+    /**
+     * Checks if the player has enough mana to play a card and if there is a valid tile to play a UnitCard.
+     * @return
+    */
     public boolean canPlayCard(GameState gameState, boolean isUnitCard) {
         if (isUnitCard) {
             return (super.getMana() >= getLowestCostUnitCardPrice() && (!TileLocator.getValidSpawnTiles(gameState).isEmpty()));
@@ -140,6 +172,10 @@ public class AIPlayerController extends PlayerController {
         }
     }
 
+    /**
+     * This class is a helper method to return the lowest cost of a UnitCard from the players hand
+     * @return
+    */
     private int getLowestCostUnitCardPrice() {
         ArrayList<UnitCard> unitCards = super.getUnitCards();
         int lowestManaCost = Integer.MAX_VALUE;
@@ -155,18 +191,10 @@ public class AIPlayerController extends PlayerController {
         return lowestManaCost;
     }
 
-    private UnitCard getHighestCostUnitCard() {
-        ArrayList<UnitCard> unitCards = super.getUnitCards();
-        UnitCard highestManaCost = unitCards.get(0);
-
-        for (UnitCard unitCard: unitCards) {
-            if (unitCard.getManaCost() > highestManaCost.getManaCost()) {
-                highestManaCost = unitCard;
-            }
-        }
-        return highestManaCost;
-    }
-
+    /**
+     * This class is a helper method to retrieve the lowest cost UnitCard from the players hand
+     * @return
+    */
     private UnitCard getLowestCostUnitCard() {
         ArrayList<UnitCard> unitCards = super.getUnitCards();
         UnitCard lowestManaCost = unitCards.get(0);
@@ -179,6 +207,27 @@ public class AIPlayerController extends PlayerController {
         return lowestManaCost;
     }
 
+    /**
+     * This class is a helper method to retrieve the highest cost UnitCard from the players hand
+     * @return
+    */
+    private UnitCard getHighestCostUnitCard() {
+        ArrayList<UnitCard> unitCards = super.getUnitCards();
+        UnitCard highestManaCost = unitCards.get(0);
+
+        for (UnitCard unitCard: unitCards) {
+            if (unitCard.getManaCost() > highestManaCost.getManaCost()) {
+                highestManaCost = unitCard;
+            }
+        }
+        return highestManaCost;
+    }
+
+    /**
+     * Executes the logic for moving the player's units.
+     * Iterates through the player's units and moves them to the nearest unoccupied tile
+     * to the enemy avatar if they have not moved and are not adjacent to an enemy unit.
+    */
     public void moveUnits(ActorRef out, GameState gameState) {
         TileWrapper[][] board = gameState.getBoard().getBoard();
         ArrayList<UnitWrapper> units = super.player.getUnits();
@@ -196,10 +245,12 @@ public class AIPlayerController extends PlayerController {
         }
     }
 
+    /**
+     * This class is responsible for ending the players turn and drawing a card into their deck from their hand
+    */
     public void endTurn(GameState gameState) {
         gameState.switchPlayer();
         super.drawCard();
     }
 
-    
 }

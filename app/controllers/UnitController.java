@@ -12,6 +12,7 @@ import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.Avatar;
+import structures.basic.EffectAnimation;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
@@ -33,6 +34,10 @@ public class UnitController {
 
 		Unit unit = BasicObjectBuilders.loadUnit(config, UnitWrapper.nextId, Unit.class);
 		unit.setPositionByTile(tile);
+		
+		EffectAnimation summoning= BasicObjectBuilders.loadEffect(StaticConfFiles.f1_summon.toString());
+		BasicCommands.playEffectAnimation(out, summoning, tile);
+
 		BasicCommands.drawUnit(out, unit, tile);
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
@@ -116,6 +121,9 @@ public class UnitController {
 						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 
 						BasicCommands.setUnitAttack(out, unitWrapper.getUnit(), unitWrapper.getAttack());
+						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+
+						BasicCommands.drawTile(out, unitWrapper.getTile().getTile(), 0);
 						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
