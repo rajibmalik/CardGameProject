@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
+import structures.basic.EffectAnimation;
 import structures.basic.SpellCard;
 import structures.basic.UnitWrapper;
+import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
 
 public class SpellController {
 
@@ -23,9 +26,13 @@ public class SpellController {
         }
 
         if (targetUnit != null) {
-            BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 2);
-            try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
-    
+            // BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 2);
+            // try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+
+            // test 
+            EffectAnimation summoning= BasicObjectBuilders.loadEffect(StaticConfFiles.f1_inmolation);
+		    BasicCommands.playEffectAnimation(out, summoning, targetUnit.getTile().getTile());
+
             spellCard.applySpellAbility(out, gameState, targetUnit.getTile());
     
             if (targetUnit.getHealth() <= 0) {
@@ -54,11 +61,13 @@ public class SpellController {
         }
 
         if (lowestHealthUnit != null) {
-            BasicCommands.drawTile(out, lowestHealthUnit.getTile().getTile(), 2);
-            try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+            EffectAnimation summoning= BasicObjectBuilders.loadEffect(StaticConfFiles.f1_inmolation);
+		    BasicCommands.playEffectAnimation(out, summoning, lowestHealthUnit.getTile().getTile());
+        
             spellCard.applySpellAbility(out, gameState, lowestHealthUnit.getTile());
             BasicCommands.setUnitHealth(out, lowestHealthUnit.getUnit(), lowestHealthUnit.getHealth());
             try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+            
             BasicCommands.drawTile(out, lowestHealthUnit.getTile().getTile(), 0);
             try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
         }
