@@ -1,9 +1,10 @@
-
-
 package abilities;
+
+import java.util.ArrayList;
 
 import akka.actor.ActorRef;
 import commands.BasicCommands;
+import controllers.UnitController;
 import structures.GameState;
 import structures.basic.Player;
 import structures.basic.TileWrapper;
@@ -17,28 +18,25 @@ public class DarkTerminus implements SpellAbility {
 	public void castSpell(ActorRef out, GameState gameState, TileWrapper targetTile) {
 		// TODO Auto-generated method stub
 		
-		Player currentPlayer = gameState.getCurrentPlayer();
+		Player humanPlayer = gameState.getHumanPlayer();
 
-		destroyEnemy(out, currentPlayer, targetTile);
-		SummonWraithling.createWraithling(out, currentPlayer, targetTile);
-
-	}
-
-	public void destroyEnemy(ActorRef out, Player player, TileWrapper targetTile) {
-		UnitWrapper unitWrapper = targetTile.getUnit();
-		Unit unit = unitWrapper.getUnit();
-		unitWrapper.getTile().setHasUnit(false);
-		unitWrapper.getTile().setUnitWrapper(null);
-		player.getUnits().remove(unitWrapper);
-
-		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.death);
-		BasicCommands.deleteUnit(out, unit);
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		destroyEnemy(out, gameState, targetTile);
+		SummonWraithling.createWraithling(out, humanPlayer, targetTile);
 
 	}
+
+	public void destroyEnemy(ActorRef out, GameState gameState, TileWrapper targetTile) {
+		Player aiPlayer = gameState.getAIPlayer();
+		UnitWrapper unitDying = targetTile.getUnit();
+		Unit unit = unitDying.getUnit();
+		
+		UnitController.unitDeathBackend(out, gameState, aiPlayer,  unitDying);
+		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unit);
+		
+
+	}
+	
+
 
 }
+

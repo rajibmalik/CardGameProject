@@ -22,6 +22,8 @@ public class SummonWraithling {
 		targetTile.setUnitWrapper(unitWrapper);
 		targetTile.setHasUnit(true);
 		unitWrapper.setTile(targetTile);
+		unitWrapper.setHasAttacked(true);
+		unitWrapper.setHasMoved(true);
 		player.addUnit(unitWrapper);
 
 		

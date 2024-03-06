@@ -21,17 +21,14 @@ public class Deathwatch implements UnitAbility {
 	}
 
 	public void applyAbility(ActorRef out, GameState gameState, UnitWrapper unit) {
-		Player currentPlayer = gameState.getCurrentPlayer();
+		Player currentPlayer = gameState.getHumanPlayer();
 
 		if (unit.getName().equals("Bad Omen")) {
 			int attack = unit.getAttack() + this.attackBonus;
 			unit.setAttack(attack);
 			BasicCommands.setUnitAttack(out, unit.getUnit(), attack);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			
 		} else if (unit.getName().equals("Shadow Watcher")) {
 			int attack = unit.getAttack() + this.attackBonus;
 			int health = unit.getHealth() + this.healthBonus;
@@ -39,11 +36,8 @@ public class Deathwatch implements UnitAbility {
 			unit.setHealth(unit.getHealth() + this.healthBonus);
 			BasicCommands.setUnitHealth(out, unit.getUnit(), health);
 			BasicCommands.setUnitAttack(out, unit.getUnit(), attack);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			
 		} else if (unit.getName().equals("Bloodmoon Priestess")) {
 			TileWrapper unitPosition = unit.getTile();
 
@@ -72,10 +66,13 @@ public class Deathwatch implements UnitAbility {
 						BasicCommands.setUnitHealth(out, enemyUnit.getUnit(), enemyUnit.getHealth());
 						try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
-						// Heal the Shadowdancer
-						unit.increaseHealth(1);
-						BasicCommands.setUnitHealth(out, unit.getUnit(), unit.getHealth());
-						try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+						// Heal the Shadowdancer if health is less than max health
+						if(unit.getHealth()<4){
+							unit.increaseHealth(1);
+							BasicCommands.setUnitHealth(out, unit.getUnit(), unit.getHealth());
+							try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+						}
+						
 					}
 				}
 			} else if (currentPlayer == gameState.getAIPlayer()) {
