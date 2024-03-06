@@ -1,165 +1,180 @@
 package structures.basic;
+
 import abilities.UnitAbility;
 import akka.actor.ActorRef;
 import structures.GameState;
 
 public class UnitWrapper {
-    private Unit unit; // Unit reference to backend representation of a Unit
-    private String name; 
-    private final int maxHealth;
-    private int health;
-    private int attack;
-    private TileWrapper tile;
-    private boolean hasBeenClicked;
-    private boolean hasMoved;
-    private boolean hasAttacked;
-    private Player player; // Player reference to the owner of the unit
-    private UnitAbility ability;
-    private final int id; // Unique identifier for each UnitWrapper, cannot be changed
-    public static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
-                                   // allowing us to keep track of the counter
+	private Unit unit; // Unit reference to backend representation of a Unit
+	private String name;
+	private final int maxHealth;
+	private int health;
+	private int attack;
+	private TileWrapper tile;
+	private boolean hasBeenClicked;
+	private boolean hasMoved;
+	private boolean hasAttacked;
+	private Player player; // Player reference to the owner of the unit
+	private UnitAbility ability;
+	private final int id; // Unique identifier for each UnitWrapper, cannot be changed
+	public static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
+									// allowing us to keep track of the counter
 
-    // Default constructor
-    public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability, TileWrapper tile) {
+	// Default constructor
+	public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability,
+			TileWrapper tile) {
 
-        if (health < 0 || attack < 0) {
-            throw new IllegalArgumentException("Health and attack values cannot be negative & Unit and Player cannot be null!");
-        }
-        this.player = player;
-        this.unit = unit;
-        this.name = name;
-        this.health = health;
-        this.attack = attack;
-        this.hasBeenClicked = false;
-        this.hasMoved = false;
-        this.hasAttacked = false;
-        this.id = nextId++; // id is assigned to value of nextId, then nextId incremented  
-        this.ability = ability;
-        this.tile=tile;
-        this.maxHealth = health;
-    }
+		if (health < 0 || attack < 0) {
+			throw new IllegalArgumentException(
+					"Health and attack values cannot be negative & Unit and Player cannot be null!");
+		}
+		this.player = player;
+		this.unit = unit;
+		this.name = name;
+		this.health = health;
+		this.attack = attack;
+		this.hasBeenClicked = false;
+		this.hasMoved = false;
+		this.hasAttacked = false;
+		this.id = nextId++; // id is assigned to value of nextId, then nextId incremented
+		this.ability = ability;
+		this.tile = tile;
+		this.maxHealth = health;
+	}
 
-    public int getId() {
-        return this.id;
-    }
+	public int getId() {
+		return this.id;
+	}
 
-    public static int getNextId() {
-        return nextId;
-    }
-    
-    public TileWrapper getTile() {
- 		return tile;
- 	}
+	public static int getNextId() {
+		return nextId;
+	}
 
- 	public void setTile(TileWrapper tile) {
- 		this.tile = tile;
- 	}
+	public TileWrapper getTile() {
+		return tile;
+	}
 
-    public void setHealth(int health) {
-        if (health < 0) {
-            throw new IllegalArgumentException("Health value cannot be negative!");
-        }
-        this.health = health;
-    }
+	public void setTile(TileWrapper tile) {
+		this.tile = tile;
+	}
 
-    public int getHealth() {
-        return this.health;
-    }
+	public void setHealth(int health) {
+		if (health < 0) {
+			throw new IllegalArgumentException("Health value cannot be negative!");
+		}
+		this.health = health;
+	}
 
-    public int getMaxHealth() {
-        return this.maxHealth;
-    }
+	public int getHealth() {
+		return this.health;
+	}
 
-    public void setAttack(int attack) {
-        if (attack < 0) {
-            throw new IllegalArgumentException("Attack value cannot be negative!");
-        }
-        this.attack = attack;
-    }
+	public int getMaxHealth() {
+		return this.maxHealth;
+	}
 
-    public int getAttack() {
-        return this.attack;
-    }
+	public void setAttack(int attack) {
+		if (attack < 0) {
+			throw new IllegalArgumentException("Attack value cannot be negative!");
+		}
+		this.attack = attack;
+	}
 
-    public void setHasBeenClicked(Boolean clicked) {
-        this.hasBeenClicked = clicked;
-    }
+	public int getAttack() {
+		return this.attack;
+	}
 
-    public boolean getHasBeenClicked() {
-        return this.hasBeenClicked;
-    }
+	public void setHasBeenClicked(Boolean clicked) {
+		this.hasBeenClicked = clicked;
+	}
 
-    public void setPlayer(Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Player reference cannot be set to null!");
-        }
-        this.player = player;
-    }
+	public boolean getHasBeenClicked() {
+		return this.hasBeenClicked;
+	}
 
-    public Player getPlayer() {
-        return this.player;
-    }
+	public void setPlayer(Player player) {
+		if (player == null) {
+			throw new IllegalArgumentException("Player reference cannot be set to null!");
+		}
+		this.player = player;
+	}
 
-    public void setUnit(Unit unit) {
-        if (unit == null) {
-            throw new IllegalArgumentException("Unit reference cannot be set to null!");
-        }
-        this.unit = unit;
-    }
+	public Player getPlayer() {
+		return this.player;
+	}
 
-    public Unit getUnit() {
-        return this.unit;
-    }
+	public void setUnit(Unit unit) {
+		if (unit == null) {
+			throw new IllegalArgumentException("Unit reference cannot be set to null!");
+		}
+		this.unit = unit;
+	}
 
-    public String getName() {
-        return this.name;
-    }
+	public Unit getUnit() {
+		return this.unit;
+	}
 
-    public void useAbility(ActorRef out, GameState gameState, UnitWrapper unit) {
-        this.ability.applyAbility(out,gameState,unit);
-    }
+	public String getName() {
+		return this.name;
+	}
 
-    public UnitAbility getAbility() {
-        return this.ability;
-    }
+	public void useAbility(ActorRef out, GameState gameState, UnitWrapper unit) {
+		this.ability.applyAbility(out, gameState, unit);
+	}
 
-    public void setHasMoved(Boolean moved) {
-        this.hasMoved = moved;
-    }
+	public UnitAbility getAbility() {
+		return this.ability;
+	}
 
-    public boolean getHasMoved() {
-        return this.hasMoved;
-    }
-    
-    public void setHasAttacked(Boolean attacked) {
-        this.hasAttacked = attacked;
-    }
+	public void setHasMoved(Boolean moved) {
+		this.hasMoved = moved;
+	}
 
-    public boolean getHasAttacked() {
-        return this.hasAttacked;
-    }
-    
-    public void decreaseHealth(int damage) {
-    	
-    	int newHealth = this.health - damage;
-    	
-    	if(newHealth>0) {
-    		this.health -= damage;
-    	} else {
-    		this.health=0;
-    	}
-    	
-    }
+	public boolean getHasMoved() {
+		return this.hasMoved;
+	}
+
+	public void setHasAttacked(Boolean attacked) {
+		this.hasAttacked = attacked;
+	}
+
+	public boolean getHasAttacked() {
+		return this.hasAttacked;
+	}
+
+	public void decreaseHealth(int damage) {
+
+		int newHealth = this.health - damage;
+
+		if (newHealth > 0) {
+			this.health -= damage;
+		} else {
+			this.health = 0;
+		}
+
+	}
 
 	public void increaseHealth(int healthIncrease) {
 		this.health += healthIncrease;
 	}
 
-    public String toString() {
-        return (this.name + ": attack " + this.attack +  ", " + "health " + this.health );
-    }
+	public boolean equals(Object comparedObject) {
+		if (this == comparedObject) {
+			return true;
+		}
 
+		if (!(comparedObject instanceof UnitWrapper)) {
+			return false;
+		}
 
+		UnitWrapper comparedUnitWrapper = (UnitWrapper) comparedObject;
 
+		// if the instance variables of the objects are the same, so are the objects
+		return this.name.equals(comparedUnitWrapper.getName()) && this.id == comparedUnitWrapper.id;
+	}
+
+	public String toString() {
+		return (this.name + ": attack " + this.attack + ", " + "health " + this.health);
+	}
 
 }

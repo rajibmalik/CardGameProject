@@ -154,13 +154,13 @@ public class Initalize implements EventProcessor{
 		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.humanAvatar, 0, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		return unit;
 	}
@@ -186,13 +186,13 @@ public class Initalize implements EventProcessor{
 		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 1, Unit.class);
 		unit.setPositionByTile(tile); 
 		BasicCommands.drawUnit(out, unit, tile);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, 2);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, 20);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		return unit;
 	}

@@ -18,36 +18,34 @@ public class HornOfTheForsaken implements SpellAbility {
 	@Override
 	public void castSpell(ActorRef out, GameState gameState, TileWrapper targetTile) {
 
-		List<UnitWrapper> units = gameState.getCurrentPlayer().getUnits();
+		List<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
 		for (UnitWrapper unit : units) {
 			if (unit instanceof Avatar) {
 				((Avatar) unit).setRobustness(3);
 				((Avatar) unit).setArtifactActive(true);
 			}
 		}
-		
 
 	}
-	
+
 	public static void summonWraithling(ActorRef out, GameState gameState, TileWrapper targetTile) {
-	    Player currentPlayer = gameState.getCurrentPlayer();
-	    ArrayList<TileWrapper> validTiles = getValidTiles(gameState);
-	    
-	    // Check if there are valid tiles available
-	    if (!validTiles.isEmpty()) {
-	        TileWrapper tileWrapper = validTiles.get(0);
-	        SummonWraithling.createWraithling(out, currentPlayer, tileWrapper);
-	    } else {
-	        // Handle the case where no valid tiles are available
-	        System.out.println("No valid tiles available for summoning.");
-	    }
-	}
+		Player currentPlayer = gameState.getHumanPlayer();
+		ArrayList<TileWrapper> validTiles = getValidTiles(gameState);
 
+		// Check if there are valid tiles available
+		if (!validTiles.isEmpty()) {
+			TileWrapper tileWrapper = validTiles.get(0);
+			SummonWraithling.createWraithling(out, currentPlayer, tileWrapper);
+		} else {
+			// Handle the case where no valid tiles are available
+			System.out.println("No valid tiles available for summoning.");
+		}
+	}
 
 	public static ArrayList<TileWrapper> getValidTiles(GameState gameState) {
 		ArrayList<TileWrapper> validTiles = new ArrayList<>();
 		TileWrapper[][] board = gameState.getBoard().getBoard();
-		List<UnitWrapper> units = gameState.getAIPlayer().getUnits();
+		List<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
 
 		for (UnitWrapper unit : units) {
 			TileWrapper unitPosition = unit.getTile();

@@ -149,16 +149,5 @@ public void resetAIUnitMovementAndAttack() {
 		return this.humanPlayer;
 	}
 	
-	public void unitDealth(Player currentPlayer, UnitWrapper unitWrapper) {
-		if(unitWrapper.getHealth()<=0){
-			unitWrapper.getTile().setHasUnit(false);
-			unitWrapper.getTile().setUnitWrapper(null);
-			unitWrapper.setTile(null);
-			removeUnit(unitWrapper);
-		}
-	}
 	
-	  public void removeUnit(UnitWrapper unitWrapper){
-	    	currentPlayer.getUnits().remove(unitWrapper);
-	    }
 }
