@@ -33,24 +33,12 @@ public class AIPlayerController extends PlayerController {
 
         playUnitCard(out, gameState);
         playSpellCard(out, gameState);
+        // test
+        moveUnits(out, gameState);
+        
         attackUnits(out, gameState);
         endTurn(gameState);
     }
-
-    // public void playUnitCard(ActorRef out, GameState gameState) {
-    //     while (canPlayCard(gameState, true)) {
-    //         UnitCard unitCard = getLowestCostUnitCard();
-          
-    //         // ArrayList<TileWrapper> tileWrappers = getValidTiles(gameState);
-    //         ArrayList<TileWrapper> tileWrappers = TileLocator.getValidSpawnTiles(gameState);
-    //         TileWrapper tileWrapper = tileWrappers.get(0);
-    //         Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
-
-    //         UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
-    //         super.removeCardFromHand(unitCard);
-    //         super.deductAndRenderMana(gameState, out, unitCard);
-    //     }
-    // }
 
     public void playUnitCard(ActorRef out, GameState gameState) {
         while (canPlayCard(gameState, true)) {
@@ -191,8 +179,27 @@ public class AIPlayerController extends PlayerController {
         return lowestManaCost;
     }
 
+    public void moveUnits(ActorRef out, GameState gameState) {
+        TileWrapper[][] board = gameState.getBoard().getBoard();
+        ArrayList<UnitWrapper> units = super.player.getUnits();
+
+        for (UnitWrapper unitWrapper: units) {
+            if (!unitWrapper.getHasMoved() && TileLocator.isAdjacentToHumanUnit(gameState, unitWrapper) == false) {
+                ArrayList<TileWrapper> validTiles = TileLocator.getAdjacentTilesWithoutUnit(gameState, unitWrapper);
+                TileWrapper tileWrapper = TileLocator.getClosestTileToHumanAvatar(gameState, validTiles);
+
+                UnitController.moveUnitBackend(unitWrapper, tileWrapper);
+                // gives time for backend to process before rendering frontend
+                try {Thread.sleep(2500);} catch (InterruptedException e) {e.printStackTrace();} 
+                UnitController.moveUnitFrontend(out, unitWrapper, tileWrapper.getTile());
+            }
+        }
+    }
+
     public void endTurn(GameState gameState) {
         gameState.switchPlayer();
         super.drawCard();
     }
+
+    
 }

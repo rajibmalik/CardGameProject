@@ -113,6 +113,20 @@ public class TileLocator {
 		return enemyUnits;
 	}
 
+	public static ArrayList<TileWrapper> getAdjacentTilesWithoutUnit(GameState gameState, UnitWrapper unitWrapper) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		List<TileWrapper> adjacentTiles = TileLocator.getAdjacentTiles(board, unitWrapper);
+		ArrayList<TileWrapper> validTiles = new ArrayList<>();
+
+		for (TileWrapper tileWrapper: adjacentTiles) {
+			if (!tileWrapper.getHasUnit()) {
+				validTiles.add(tileWrapper);
+			}
+		}
+
+		return validTiles;
+	}
+
 	public static TileWrapper getHumanAvatarTile(GameState gameState) {
         ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
         for (UnitWrapper unitWrapper : units) {
@@ -140,6 +154,53 @@ public class TileLocator {
 
 		return tilesWithoutUnits;
 	}
+
+	public static boolean isAdjacentToHumanUnit(GameState gameState, UnitWrapper unitWrapper) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
+
+		List<TileWrapper> adjacentTiles = TileLocator.getAdjacentTiles(board, unitWrapper);
+
+		for (TileWrapper tileWrapper: adjacentTiles) {
+			if (tileWrapper.getHasUnit() ) {
+				UnitWrapper unit = tileWrapper.getUnit();
+				if (units.contains(unit)) {
+					return true;
+				}
+				
+			}
+		}
+
+		return false;
+	}
+
+	public static TileWrapper getClosestTileToHumanAvatar(GameState gameState, List<TileWrapper> validTiles) {
+		TileWrapper humanTileWrapper = TileLocator.getHumanAvatarTile(gameState);
+		int minDistance = Integer.MAX_VALUE;
+		TileWrapper closestTile = null;
+
+		for (TileWrapper tileWrapper : validTiles) {
+			int distance = calculateDistance(tileWrapper, humanTileWrapper);
+			if (distance < minDistance) {
+				minDistance = distance;
+				closestTile = tileWrapper;
+			}
+		}
+	
+		return closestTile;
+	}
+
+	private static int calculateDistance(TileWrapper tile1, TileWrapper tile2) {
+		int x1 = tile1.getTile().getXpos();
+		int y1 = tile1.getTile().getYpos();
+		int x2 = tile2.getTile().getXpos();
+		int y2 = tile2.getTile().getYpos();
+	
+		// Euclidean distance formula: sqrt((x2 - x1)^2 + (y2 - y1)^2)
+		return Math.abs(x2 - x1) + Math.abs(y2 - y1);
+	}
+
+
 
 
 	

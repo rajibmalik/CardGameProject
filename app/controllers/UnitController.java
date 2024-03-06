@@ -27,43 +27,28 @@ public class UnitController {
 	public UnitController() {
 	}
 
+	// creates a Unit object from the config
 	public static Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
 		String config = unitCard.getCard().getUnitConfig();
 
 		Unit unit = BasicObjectBuilders.loadUnit(config, UnitWrapper.nextId, Unit.class);
 		unit.setPositionByTile(tile);
 		BasicCommands.drawUnit(out, unit, tile);
-
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitAttack(out, unit, unitCard.getAttack());
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, unit, unitCard.getHealth());
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 
 		// for time between spawning units
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		return unit;
 	}
 
+	// creates a backend UnitWrapper object
 	public static void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
 		String name = unitCard.getName();
 		int health = unitCard.getHealth();
@@ -85,65 +70,60 @@ public class UnitController {
 		player.addUnit(unitWrapper);
 	}
 
+	// logic for carrying out an attack on the front and backend, uses various helper classes
 	public static void attackUnit(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper,
 			UnitWrapper unitWrapperAttacked) {
 		Player currentPlayer = gameState.getCurrentPlayer();
-		Unit attackingUnit = attackingUnitWrapper.getUnit();
-		Unit unitAttacked = unitWrapperAttacked.getUnit();
 		attackUnitBackend(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
-		attackUnitFrontEnd(out, gameState, attackingUnit, unitAttacked, unitWrapperAttacked);
+		attackUnitFrontEnd(out, gameState, attackingUnitWrapper, unitWrapperAttacked, unitWrapperAttacked);
 		updatePlayerHealth(out, gameState);
 
 		// Attacked unit Dies
 		if (unitWrapperAttacked.getHealth() <= 0) {
 			unitDeathBackend(out, gameState, currentPlayer, unitWrapperAttacked);
-			unitDeathFrontEnd(out, currentPlayer, unitAttacked);
+			unitDeathFrontEnd(out, currentPlayer, unitWrapperAttacked);
 		} else if (unitWrapperAttacked.getHealth() > 0) {
 			// If attacked unit does not die, perform counter attack
 			counterAttackUnitBackend(out, gameState, unitWrapperAttacked, attackingUnitWrapper);
-			attackUnitFrontEnd(out, gameState, unitAttacked, attackingUnit, attackingUnitWrapper);
+			attackUnitFrontEnd(out, gameState, unitWrapperAttacked, attackingUnitWrapper, attackingUnitWrapper);
 			updatePlayerHealth(out, gameState);
 			// Counter attack results in attacking unit death
 			if (attackingUnitWrapper.getHealth() <= 0) {
 				UnitController.unitDeathBackend(out, gameState, currentPlayer, attackingUnitWrapper);
-				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnit);
+				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnitWrapper);
 			}
 		}
 
 		unclickAllUnits(gameState);
 
 		// Render idle movement
-		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.idle);
-		BasicCommands.playUnitAnimation(out, unitAttacked, UnitAnimationType.idle);
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		BasicCommands.playUnitAnimation(out, attackingUnitWrapper.getUnit(), UnitAnimationType.idle);
+		BasicCommands.playUnitAnimation(out, unitWrapperAttacked.getUnit(), UnitAnimationType.idle);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 
-	private static void applyZeal(ActorRef out, GameState gameState, UnitWrapper attackingUnit,
-			UnitWrapper attackedUnit) {
+	// checks and applies zeal if applicable
+	private static void applyZeal(ActorRef out, GameState gameState, UnitWrapper attackingUnit, UnitWrapper attackedUnit) {
 		ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
 
 		if (attackedUnit instanceof Avatar && attackedUnit.getName().equals("AI")) {
 			if (attackingUnit.getAttack() > 0 && checkForZeal(gameState)) {
-
 				for (UnitWrapper unitWrapper : units) {
 					if (unitWrapper.getAbility() instanceof Zeal) {
 						unitWrapper.useAbility(out, gameState, unitWrapper);
+
+						BasicCommands.drawTile(out, unitWrapper.getTile().getTile(), 2);
+						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+
 						BasicCommands.setUnitAttack(out, unitWrapper.getUnit(), unitWrapper.getAttack());
-						try {
-							Thread.sleep(300);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
 			}
 		}
 	}
 
+	// helper method to check if zeal can be applied
 	private static boolean checkForZeal(GameState gameState) {
 		ArrayList<UnitWrapper> units = gameState.getAIPlayerController().getUnits();
 
@@ -152,24 +132,20 @@ public class UnitController {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
+	
 	private static void unclickAllUnits(GameState gameState) {
 		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
 			unit.setHasBeenClicked(false);
 		}
 	}
 
+	// logic for carrying out an attack on the backend
 	public static void attackUnitBackend(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper,
-			UnitWrapper unitWrapperAttacked) {
-		attackingUnitWrapper.setHasAttacked(true);
-		unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
-
-		if (checkForZeal(gameState)) {
-			applyZeal(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
-		}
+			UnitWrapper unitWrapperAttacked) {attackingUnitWrapper.setHasAttacked(true);
+   			unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
 
 		// Apply horn of forsaken logic if applicable
 		if (unitWrapperAttacked instanceof Avatar && ((Avatar) unitWrapperAttacked).isArtifactActive() == true) {
@@ -180,12 +156,10 @@ public class UnitController {
 		}
 	}
 
-	// same as normal attack, expect "has attacked" won't be set to true so player
-	// can attack on next turn
-	public static void counterAttackUnitBackend(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper,
-			UnitWrapper unitWrapperAttacked) {
+	// same as normal attack, expect "has attacked" won't be set to true so player can attack on next turn
+	public static void counterAttackUnitBackend(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
 		unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
-
+		
 		// Apply horn of forsaken logic if applicable
 		if (unitWrapperAttacked instanceof Avatar && ((Avatar) unitWrapperAttacked).isArtifactActive() == true) {
 			((Avatar) unitWrapperAttacked).decreaseRobustness();
@@ -196,28 +170,26 @@ public class UnitController {
 
 	}
 
-	public static void attackUnitFrontEnd(ActorRef out, GameState gameState, Unit attackingUnit, Unit unitAttacked,
+	// logic for carrying out an attack on the frontend
+	public static void attackUnitFrontEnd(ActorRef out, GameState gameState, UnitWrapper attackingUnit, UnitWrapper unitAttacked,
 			UnitWrapper unitWrapperAttacked) {
 
 		TileHighlightController.removeBoardHighlight(out, gameState);
-		BasicCommands.playUnitAnimation(out, attackingUnit, UnitAnimationType.attack);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		BasicCommands.playUnitAnimation(out, attackingUnit.getUnit(), UnitAnimationType.attack);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 
-		BasicCommands.setUnitHealth(out, unitAttacked, unitWrapperAttacked.getHealth());
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		BasicCommands.setUnitHealth(out, unitAttacked.getUnit(), unitWrapperAttacked.getHealth());
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// applies zeal if applicable after inital frontend unit updated 
+
+		if (checkForZeal(gameState)) {
+			applyZeal(out, gameState, attackingUnit, unitWrapperAttacked);
 		}
 
 	}
 
-	public static void unitDeathBackend(ActorRef out, GameState gameState, Player currentPlayer,
-			UnitWrapper unitDying) {
+	public static void unitDeathBackend(ActorRef out, GameState gameState, Player currentPlayer, UnitWrapper unitDying) {
 		unitDealth(gameState, unitDying);
 
 		// Create a copy of the units list to avoid ConcurrentModificationException
@@ -240,9 +212,8 @@ public class UnitController {
 		}
 	}
 
+	// removes a unit from a Players list of UnitWrappers
 	public static void removeUnit(GameState gameState, UnitWrapper unitWrapper) {
-	    Player currentPlayer = gameState.getCurrentPlayer();
-
 	    // Look for dead unit in human unit list
 	    Iterator<UnitWrapper> humanIterator = gameState.getHumanPlayer().getUnits().iterator();
 	    while (humanIterator.hasNext()) {
@@ -281,14 +252,12 @@ public class UnitController {
 	}
 
 
-	public static void unitDeathFrontEnd(ActorRef out, Player currentPlayer, Unit unitDying) {
-		BasicCommands.playUnitAnimation(out, unitDying, UnitAnimationType.death);
-		BasicCommands.deleteUnit(out, unitDying);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public static void unitDeathFrontEnd(ActorRef out, Player currentPlayer, UnitWrapper unitDying) {
+		BasicCommands.playUnitAnimation(out, unitDying.getUnit(), UnitAnimationType.death);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		BasicCommands.deleteUnit(out, unitDying.getUnit());
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		
 	}
 
 	private static void updatePlayerHealth(ActorRef out, GameState gameState) {
@@ -337,11 +306,5 @@ public class UnitController {
 		Unit unit = unitWrapper.getUnit();
 		BasicCommands.moveUnitToTile(out, unit, tile);
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
-
 }

@@ -31,9 +31,7 @@ public class DarkTerminus implements SpellAbility {
 		Unit unit = unitDying.getUnit();
 		
 		UnitController.unitDeathBackend(out, gameState, aiPlayer,  unitDying);
-		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unit);
-		
-
+		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unitDying);
 	}
 	
 
