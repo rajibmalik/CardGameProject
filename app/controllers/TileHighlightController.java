@@ -117,6 +117,25 @@ public class TileHighlightController {
 		}
 	}
 
+	public static void highlightProvokeEnemyInRange(ActorRef out, UnitWrapper unit, TileWrapper[][] board) {
+
+		for (TileWrapper tile : TileLocator.getAdjacentTiles(board, unit)) {
+			int xpos = tile.getXpos();
+			int ypos = tile.getYpos();
+			// Check if the tile is not already occupied by a unit
+			if (isTileOccupied(board, xpos, ypos) && isEnemyUnit(tile, unit)) {
+				if (tile.getUnit().getName().equals("Swamp Entangler") || tile.getUnit().getName().equals("Silverguard Knight")) {
+					setTileHighlightStatus(tile.getTile(), 2);
+					BasicCommands.drawTile(out, tile.getTile(), 2);
+	
+					try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
+
+				}
+
+			}
+		}
+	}
+
 	private static void highlightTilesForUnitMovement(ActorRef out, UnitWrapper unit, TileWrapper[][] board) {
 		TileWrapper unitPosition = unit.getTile();
 

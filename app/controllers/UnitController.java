@@ -6,6 +6,7 @@ import java.util.List;
 import abilities.Deathwatch;
 import abilities.HornOfTheForsaken;
 import abilities.UnitAbility;
+import abilities.Zeal;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
@@ -80,13 +81,14 @@ public class UnitController {
 			unitDeathFrontEnd(out, currentPlayer, unitAttacked);
 		} else if (unitWrapperAttacked.getHealth() > 0) {
 			// If attacked unit does not die, perform counter attack
+
 			attackUnitBackend(out, gameState, unitWrapperAttacked, attackingUnitWrapper);
 			attackUnitFrontEnd(out, gameState, unitAttacked, attackingUnit, attackingUnitWrapper);
+			
 			// Counter attack results in attacking unit death
 			if (attackingUnitWrapper.getHealth() <= 0) {
 				UnitController.unitDeathBackend(out, gameState, currentPlayer, attackingUnitWrapper);
 				UnitController.unitDeathFrontEnd(out, currentPlayer, attackingUnit);
-
 			}
 		}
 
@@ -101,6 +103,35 @@ public class UnitController {
 			e.printStackTrace();
 		}
 	}
+
+	private static void applyZeal(ActorRef out, GameState gameState, UnitWrapper attackingUnit, UnitWrapper attackedUnit) {
+		ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
+
+		if (attackedUnit instanceof Avatar && attackedUnit.getName().equals("AI")) {
+			if (attackingUnit.getAttack() > 0 &&  checkForZeal(gameState)) {
+				
+				for (UnitWrapper unitWrapper:units) {
+					if (unitWrapper.getAbility() instanceof Zeal) {
+						unitWrapper.useAbility(out, gameState, unitWrapper);
+						BasicCommands.setUnitAttack(out, unitWrapper.getUnit(), unitWrapper.getAttack());
+						try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
+					}
+				}
+			}
+		}
+	}
+
+	private static boolean checkForZeal(GameState gameState) {
+		ArrayList<UnitWrapper> units = gameState.getAIPlayerController().getUnits();
+
+		for (UnitWrapper unitWrapper:units) {
+			if (unitWrapper.getAbility() instanceof Zeal) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 	
 	private static void unclickAllUnits(GameState gameState) {
 		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
@@ -108,10 +139,13 @@ public class UnitController {
 		}
 	}
     
-    
     public static void attackUnitBackend(ActorRef out,GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
 		attackingUnitWrapper.setHasAttacked(true);
 		unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
+
+		if (checkForZeal(gameState)) {
+			applyZeal(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+		}
 		
 		//Apply horn of forsaken logic if applicable
 		if (unitWrapperAttacked instanceof Avatar && ((Avatar) unitWrapperAttacked).isArtifactActive() == true) {
@@ -177,6 +211,7 @@ public class UnitController {
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 	}
+	
 
 
     

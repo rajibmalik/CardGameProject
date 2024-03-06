@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import akka.actor.ActorRef;
+import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.CardWrapper;
 import structures.basic.Player;
@@ -88,21 +89,24 @@ public class AIPlayerController extends PlayerController {
                 playAndRemoveSpell(out, gameState, spellCard);
             } else if (spellName.equals("Truestrike") && SpellController.canPlayAttackingSpell(gameState)) {
                 playAndRemoveSpell(out, gameState, spellCard);
-            }
+            } 
         }       
     }
 
     public void playAndRemoveSpell(ActorRef out, GameState gameState, SpellCard spellCard) {
         switch (spellCard.getName()) {
             case "Beamshock":
+                BasicCommands.addPlayer1Notification(out, "Playing Beamshock", 1);
                 System.out.println("Playing Beamshock");
                 SpellController.playBeamShock(out, gameState, spellCard);
                 break;
             case "Sundrop Elixir":
+                BasicCommands.addPlayer1Notification(out, "Playing Sundrop Elixir", 1);
                 System.out.println("Sundrop Elixir");
                 SpellController.playSundropElixir(out, gameState, spellCard);
                 break;  
             case "Truestrike":
+                 BasicCommands.addPlayer1Notification(out, "Playing Truestrike", 1);
                 System.out.println("Truestrike");
                 SpellController.playTrueStrike(out, gameState, spellCard);
                 break;
