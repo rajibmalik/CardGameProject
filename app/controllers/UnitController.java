@@ -294,6 +294,14 @@ public class UnitController {
 			}
 		}
 	}
+	
+	public static void moveUnit(ActorRef out, GameState gameState, UnitWrapper unitWrapper, TileWrapper tileWrapper) {
+		Tile tile = tileWrapper.getTile();
+		moveUnitBackend(unitWrapper, tileWrapper);
+		moveUnitFrontend(out, unitWrapper, tile);
+		TileHighlightController.removeBoardHighlight(out, gameState);
+		gameState.unclickAllUnits(gameState);
+	}
 
 	public static void moveUnitBackend(UnitWrapper unitWrapper, TileWrapper targetTile) {
 		TileWrapper oldTile = unitWrapper.getTile();

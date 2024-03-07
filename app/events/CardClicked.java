@@ -2,6 +2,8 @@
 package events;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import controllers.PlayerController;
 import controllers.TileHighlightController;
 import akka.actor.ActorRef;
 import structures.GameState;
@@ -31,13 +33,11 @@ public class CardClicked implements EventProcessor {
 			CardWrapper clickedCard = gameState.getPlayerHand().getCard(handPosition - 1);
 			System.out.println(clickedCard.getName());
 			
-
-			if (canPlayCard(gameState, clickedCard)) {
+			if (PlayerController.canPlayCard(gameState, clickedCard)) {
 				setCardClicked(handPosition, gameState, clickedCard);
 				TileHighlightController.setCardTileHighlight(out, gameState, clickedCard);
 			}
 		}
-
 	}
 
 	public void setCardClicked(int handPosition, GameState gameState, CardWrapper clickedCard) {
@@ -52,11 +52,8 @@ public class CardClicked implements EventProcessor {
 	            }
 	        }
 	        // make sure all units are unclicked
-	        for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
-	            if (unit != null) {
-	                unit.setHasBeenClicked(false);
-	            }
-	        }
+	        gameState.unclickAllUnits(gameState);
+	
 	        // Update the hasBeenClicked status of the clicked card
 	        if (clickedCard != null) {
 	            clickedCard.setHasBeenClicked(true);
@@ -71,12 +68,7 @@ public class CardClicked implements EventProcessor {
 	}
 
 
-	private static boolean canPlayCard(GameState gameState, CardWrapper clickedCard) {
-		if (clickedCard.getManaCost() <= gameState.getCurrentPlayer().getMana()) {
-			return true;
-		}
-
-		return false;
-	}
+	
+	
 
 }
