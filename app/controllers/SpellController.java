@@ -7,6 +7,8 @@ import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.EffectAnimation;
 import structures.basic.SpellCard;
+import structures.basic.Tile;
+import structures.basic.Unit;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
@@ -16,6 +18,7 @@ public class SpellController {
     public static void playTrueStrike(ActorRef out, GameState gameState, SpellCard spellCard) {
         ArrayList<UnitWrapper> humanUnits = gameState.getHumanPlayer().getUnits();
         UnitWrapper targetUnit = null;
+        
 
         for (UnitWrapper unitWrapper:humanUnits) {
             if (unitWrapper.getName() != "Human Avatar") {
@@ -36,15 +39,14 @@ public class SpellController {
             spellCard.applySpellAbility(out, gameState, targetUnit.getTile());
     
             if (targetUnit.getHealth() <= 0) {
-                BasicCommands.deleteUnit(out, targetUnit.getUnit());
+                UnitController.unitDealth(gameState, targetUnit);
+                UnitController.unitDeathFrontEnd(out, gameState.getAIPlayer(), targetUnit);
+                // BasicCommands.deleteUnit(out, targetUnit.getUnit());
                 try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
             } else {
                 BasicCommands.setUnitHealth(out, targetUnit.getUnit(), targetUnit.getHealth());
                 try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
             }
-    
-            BasicCommands.drawTile(out, targetUnit.getTile().getTile(), 0);
-            try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
         }  
     }
 

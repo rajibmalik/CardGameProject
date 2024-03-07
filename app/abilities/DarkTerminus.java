@@ -22,19 +22,16 @@ public class DarkTerminus implements SpellAbility {
 
 		destroyEnemy(out, gameState, targetTile);
 		SummonWraithling.createWraithling(out, humanPlayer, targetTile);
-
 	}
 
 	public void destroyEnemy(ActorRef out, GameState gameState, TileWrapper targetTile) {
 		Player aiPlayer = gameState.getAIPlayer();
 		UnitWrapper unitDying = targetTile.getUnit();
-		Unit unit = unitDying.getUnit();
-		
+
+		targetTile.getUnit().setHealth(0);
 		UnitController.unitDeathBackend(out, gameState, aiPlayer,  unitDying);
 		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unitDying);
 	}
 	
-
-
 }
 
