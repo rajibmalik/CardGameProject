@@ -7,6 +7,7 @@ import commands.BasicCommands;
 import controllers.AIPlayerController;
 import controllers.PlayerController;
 import structures.basic.Board;
+import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
@@ -148,6 +149,57 @@ public void resetAIUnitMovementAndAttack() {
 	public Player getHumanPlayer() {
 		return this.humanPlayer;
 	}
+	
+	/**
+	 * Helper method to un-click all units in the players array of units  
+	 * @param gameState
+	 */
+	public  void unclickAllUnits(GameState gameState) {
+		Player currentPlayer =  gameState.getCurrentPlayer();
+		for (UnitWrapper unit : currentPlayer.getUnits()) {
+			unit.setHasBeenClicked(false);
+		}
+	}
+	
+	public UnitWrapper getClickedUnit(GameState gameState) {
+		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
+			if (unit.getHasBeenClicked() == true) {
+				return unit;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasUnitBeenClicked(GameState gameState) {
+		for (UnitWrapper unitWrapper : gameState.getCurrentPlayer().getUnits()) {
+			if (unitWrapper.getHasBeenClicked() == true) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public CardWrapper getClickedCard(GameState gameState) {
+		for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
+			if (cardWrapper.hasBeenClicked() == true) {
+				return cardWrapper;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasCardBeenClicked(GameState gameState) {
+		for (CardWrapper cardWrapper : gameState.getPlayerHand().getHand()) {
+			if (cardWrapper.hasBeenClicked() == true) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	
 	
 	
 }
