@@ -153,38 +153,6 @@ public class TileClicked implements EventProcessor {
 		}
 	}
 	
-	// private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
-	// 	List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
-	// 	UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
-
-	// 	if (tiles.contains(tileWrapper)) {
-	// 		UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
-	// 		// Attack unit
-	// 		UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
-	// 	} else {
-	// 		System.out.println("MOVING");
-	// 		TileWrapper[][] board = gameState.getBoard().getBoard();
-
-	// 		List<TileWrapper> validTilesToMove = TileLocator.getTilesForUnitMovement(gameState.getClickedUnit(gameState), board);
-	// 		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithAIEnemyUnit(gameState, validTilesToMove);
-	// 		TileWrapper tileWrapperToMove = null;
-
-	// 		outerLoop:
-	// 		for(TileWrapper tile: validTilesToMove) {
-	// 			for (int i = 0; i < attackableTiles.size(); i++) {
-	// 				if (TileLocator.areAdjacent(tile, attackableTiles.get(i)) && !tile.getHasUnit()) {
-	// 					tileWrapperToMove = tile;
-	// 					break outerLoop;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		UnitController.moveUnit(out, gameState, gameState.getClickedUnit(gameState), tileWrapperToMove);
-	// 		UnitController.attackUnit(out, gameState, attackingUnitWrapper, tileWrapper.getUnit());
-	// 	}
-		
-	// }
-
 	private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
 		List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
 		UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
