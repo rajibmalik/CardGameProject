@@ -46,6 +46,7 @@ public class AIPlayerController extends PlayerController {
         moveUnits(out, gameState);
         attackUnits(out, gameState);
         endTurn(gameState);
+        BasicCommands.addPlayer1Notification(out, "Player 1 turn", 1);
     }
 
     /**
@@ -71,7 +72,7 @@ public class AIPlayerController extends PlayerController {
                 Unit unit = UnitController.renderUnit(out, unitCard, tileWrapper.getTile());
                 UnitController.createUnitWrapper(unit, unitCard, tileWrapper, gameState.getAIPlayer());
             }
-          
+            super.applyOpeningGambit(out, gameState); 
             super.removeCardFromHand(unitCard);
             super.deductAndRenderMana(gameState, out, unitCard);
         }

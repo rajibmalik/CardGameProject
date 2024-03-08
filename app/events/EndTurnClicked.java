@@ -70,6 +70,7 @@ public class EndTurnClicked implements EventProcessor {
 
 		if (nextPlayer == gameState.getAIPlayer()) {
 			gameState.getAIPlayerController().setTurnMana();
+			BasicCommands.addPlayer1Notification(out, "Player 2 turn", 1);
 			BasicCommands.setPlayer2Mana(out, nextPlayer);	
 			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 			if (gameState.getAIPlayerController().getTurn()==1) {
