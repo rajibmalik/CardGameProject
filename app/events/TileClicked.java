@@ -67,6 +67,7 @@ public class TileClicked implements EventProcessor {
 				handleTileClick(out, gameState, tileWrapper);
 			// Will run if a tile containing an enemy unit in attack range was clicked
 			} else if (TileHighlightController.getTileHighlighted(tile) == 2 && tileWrapper.getHasUnit()) {
+				System.out.println("HANDLING ATTACK");
 				handleTileClickAttack(out, gameState, tileWrapper);
 			// Resetting board highlight in all other instances
 			} else {
@@ -142,7 +143,6 @@ public class TileClicked implements EventProcessor {
 	}
 
 	private void handleTileClick(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
-		Tile tile = tileWrapper.getTile();
 		if (gameState.hasUnitBeenClicked(gameState)) {
 			UnitWrapper unitWrapper = gameState.getClickedUnit(gameState);
 			// If the unit has not moved or attacked, then move unit
@@ -153,29 +153,69 @@ public class TileClicked implements EventProcessor {
 		}
 	}
 	
+	// private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
+	// 	List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
+	// 	UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
+
+	// 	if (tiles.contains(tileWrapper)) {
+	// 		UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
+	// 		// Attack unit
+	// 		UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+	// 	} else {
+	// 		System.out.println("MOVING");
+	// 		TileWrapper[][] board = gameState.getBoard().getBoard();
+
+	// 		List<TileWrapper> validTilesToMove = TileLocator.getTilesForUnitMovement(gameState.getClickedUnit(gameState), board);
+	// 		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithAIEnemyUnit(gameState, validTilesToMove);
+	// 		TileWrapper tileWrapperToMove = null;
+
+	// 		outerLoop:
+	// 		for(TileWrapper tile: validTilesToMove) {
+	// 			for (int i = 0; i < attackableTiles.size(); i++) {
+	// 				if (TileLocator.areAdjacent(tile, attackableTiles.get(i)) && !tile.getHasUnit()) {
+	// 					tileWrapperToMove = tile;
+	// 					break outerLoop;
+	// 				}
+	// 			}
+	// 		}
+
+	// 		UnitController.moveUnit(out, gameState, gameState.getClickedUnit(gameState), tileWrapperToMove);
+	// 		UnitController.attackUnit(out, gameState, attackingUnitWrapper, tileWrapper.getUnit());
+	// 	}
+		
+	// }
+
 	private void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
+		List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
 		UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
-		UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
-		// Attack unit
-		UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+	
+		if (tiles.contains(tileWrapper)) {
+			UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
+			// Attack unit
+			UnitController.attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+		} else {
+			TileWrapper[][] board = gameState.getBoard().getBoard();
+			UnitWrapper clickedUnit = gameState.getClickedUnit(gameState);
+			TileWrapper tileWrapperToMove = null;
+
+			List<TileWrapper> validTiles = TileLocator.getTilesForUnitMovement(clickedUnit, board);
+			List<TileWrapper> tilesAdjacentToAttackedUnit = TileLocator.getAdjacentTiles(board, tileWrapper);
+
+			for (TileWrapper tile:validTiles) {
+				if (tilesAdjacentToAttackedUnit.contains(tile)) {
+					tileWrapperToMove = tile;
+				}
+			}
+	
+			// If a valid tile to move to, move and attack 
+			if (tileWrapperToMove != null) {
+				UnitController.moveUnit(out, gameState, attackingUnitWrapper, tileWrapperToMove);
+				UnitController.attackUnit(out, gameState, attackingUnitWrapper, tileWrapper.getUnit());
+			} else {
+				System.out.println("No valid tile to move to that is also attackable.");
+			}
+		}
 	}
-
-//	private boolean adjacentTilesHaveProvoke(GameState gameState, UnitWrapper unit) {
-//		if (!TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), unit).isEmpty()) {
-//			return true;
-//		}
-//		return false;
-//	}
-
-
-
-
-
-
-
 	
 
-
-
-	
 }
