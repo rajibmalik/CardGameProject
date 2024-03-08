@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.Avatar;
 import structures.basic.Tile;
@@ -91,12 +92,10 @@ public class TileLocator {
 	}
 
 	/**
-	 * Retrieves 
-	 * @param board
-	 * @param unit reference to the unit, their TileWrappers adjacent tiles are checked
-	 * @return adjacent tiles with provoke
+	 * Retrieves suitable tiles for spawning which do not have a unit set on it 
+	 * @param gameState
+	 * @return a list of TileWrappers which do not have an existing unit 
 	*/
-
 	public static List<TileWrapper> getValidSpawnTiles(GameState gameState) {
     TileWrapper[][] board = gameState.getBoard().getBoard();
     List<UnitWrapper> units = gameState.getAIPlayer().getUnits();
@@ -107,19 +106,36 @@ public class TileLocator {
             .collect(Collectors.toList());
     }
 
+	/**
+	 * Retrieves TileWrappers which contain an enemy unit adjacent to the unit being checked
+	 * @param gameState
+	 * @return a list of TileWrappers are adjacent to the unit not belonging to the AI player
+	*/
 	public static ArrayList<TileWrapper> getAdjacentTilesWithEnemyUnit(GameState gameState, UnitWrapper unitWrapper) {
 		return getAdjacentTiles(gameState.getBoard().getBoard(), unitWrapper).stream()
 				.filter(tile -> tile.getHasUnit() && !gameState.getAIPlayer().getUnits().contains(tile.getUnit()))
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
+	/**
+	 * Retrieves TileWrappers which contain a unit belonging to the AI player
+	 * @param gameState
+	 * @param validTiles reference to tiles on the board which do not have a unit set
+	 * @return a list of TileWrappers which belong to the AI player
+	*/
 	public static ArrayList<TileWrapper> getAdjacentTilesWithAIEnemyUnit(GameState gameState, List<TileWrapper> validTiles) {
 		return validTiles.stream()
 				.flatMap(tile -> getAdjacentTiles(gameState.getBoard().getBoard(), tile).stream())
 				.filter(tile -> tile.getHasUnit() && !gameState.getHumanPlayer().getUnits().contains(tile.getUnit()))
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
-	
+
+	/**
+	 * Retrieves TileWrappers which do not contain a unit belonging to the AI player
+	 * @param gameState
+	 * @param unitWraper reference to tiles on the board which do not have a unit set
+	 * @return a list of TileWrappers which belong to the AI player
+	*/
 	public static ArrayList<TileWrapper> getAdjacentTilesWithoutUnit(GameState gameState, UnitWrapper unitWrapper) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		List<TileWrapper> adjacentTiles = TileLocator.getAdjacentTiles(board, unitWrapper);
