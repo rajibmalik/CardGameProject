@@ -113,7 +113,7 @@ public class TileLocator {
 	*/
 	public static ArrayList<TileWrapper> getAdjacentTilesWithEnemyUnit(GameState gameState, UnitWrapper unitWrapper) {
 		return getAdjacentTiles(gameState.getBoard().getBoard(), unitWrapper).stream()
-				.filter(tile -> tile.getHasUnit() && !gameState.getAIPlayer().getUnits().contains(tile.getUnit()))
+				.filter(tile -> tile.getHasUnit() && !gameState.getCurrentPlayer().getUnits().contains(tile.getUnit()))
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -123,10 +123,10 @@ public class TileLocator {
 	 * @param validTiles reference to tiles on the board which do not have a unit set
 	 * @return a list of TileWrappers which belong to the AI player
 	*/
-	public static ArrayList<TileWrapper> getAdjacentTilesWithAIEnemyUnit(GameState gameState, List<TileWrapper> validTiles) {
+	public static ArrayList<TileWrapper> getAdjacentTilesWithEnemyUnit(GameState gameState, List<TileWrapper> validTiles) {
 		return validTiles.stream()
 				.flatMap(tile -> getAdjacentTiles(gameState.getBoard().getBoard(), tile).stream())
-				.filter(tile -> tile.getHasUnit() && !gameState.getHumanPlayer().getUnits().contains(tile.getUnit()))
+				.filter(tile -> tile.getHasUnit() && !gameState.getCurrentPlayer().getUnits().contains(tile.getUnit()))
 				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
