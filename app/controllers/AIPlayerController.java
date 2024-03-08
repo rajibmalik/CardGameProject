@@ -20,7 +20,7 @@ import utils.TileLocator;
  * This class is responsible for the AI decision making during the AI players turn. This includes
  * playing unit cards, spell cards, moving units, attacking units and ending turn.
  * @author Rajib Malik
- */
+*/
 
 public class AIPlayerController extends PlayerController {
     

@@ -21,6 +21,7 @@ import utils.TileLocator;
  * highlighting enemy units, and highlighting tiles for movement.
  * 
  * @author Darby Christy 
+ * @author Rajib Malik
  */
 
 public class TileHighlightController {
@@ -154,6 +155,14 @@ public class TileHighlightController {
 		}
 	}
 
+	/**
+	 * This method highlights enemy units with provoke adjacent to a specified unit
+	 * by using TileLocator to retrieve adjacent tiles with units that have provoke
+	 * @param out 
+	 * @param unit reference to the UnitWrapper which TileWrapper is being checked
+	 * @param board refrence to the current state of the board
+	 */
+
 	public static void highlightProvokeEnemyInRange(ActorRef out, UnitWrapper unit, TileWrapper[][] board) {
 
 		for (TileWrapper tile : TileLocator.getAdjacentTiles(board, unit)) {
@@ -176,7 +185,6 @@ public class TileHighlightController {
 	 * @param unit
 	 * @param board
 	 */
-
 	private static void highlightTilesForUnitMovement(ActorRef out, GameState gameState, UnitWrapper unit, TileWrapper[][] board) {
 		TileWrapper unitPosition = unit.getTile();
 		List<TileWrapper> validTiles = TileLocator.getTilesForUnitMovement(unitPosition.getUnit(), board);
@@ -191,6 +199,13 @@ public class TileHighlightController {
 		highlightTilesForUnitMovementAndAttack(out, gameState, validTiles);
 	}
 
+	/**
+	 * Highlights tiles that can be attacked by the unit, after the unit has moved to an adjacent tile
+	 * and sets the highlight status for those tiles indicating that they can be attacked
+	 * @param out
+	 * @param gameState
+	 * @param validTiles reference to the tiles which a UnitWrapper can move to
+	 */
 	private static void highlightTilesForUnitMovementAndAttack(ActorRef out, GameState gameState, List<TileWrapper> validTiles) {
 		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithAIEnemyUnit(gameState, validTiles);
 
@@ -199,7 +214,6 @@ public class TileHighlightController {
 			
 			BasicCommands.drawTile(out, tileWrapper.getTile(), 2);
 			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
-
 		}
 	}
 	
@@ -304,11 +318,4 @@ public class TileHighlightController {
 			e.printStackTrace();
 		}
 	}
-
-
-	
-	
-
-	
-
 }

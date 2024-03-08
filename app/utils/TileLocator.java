@@ -2,21 +2,26 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import akka.actor.ActorRef;
-import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.Avatar;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
 import structures.basic.UnitWrapper;
 
-public class TileLocator {
+/**
+ * The TileLoacator class provides utility methods for location of specific TileWrapper 
+ * objects on the board, this faciliates gameplay mechanics involving tiles and units.
+ * @author Rajib Malik
+ * @author Darby Christy
+ */
 
-	
+public class TileLocator {
 
 	public static List<TileWrapper> getAdjacentTiles(TileWrapper[][] board, UnitWrapper unit) {
 	    List<TileWrapper> tilesWithinRange = new ArrayList<>();
+
 		if (unit == null) {
 			return tilesWithinRange;
 
@@ -59,9 +64,16 @@ public class TileLocator {
 
 			}
 	    }
+
 	    return tilesWithinRange;
 	}
 
+	/**
+	 * Retrieves the adjacent tiles with units which have the provoke ability
+	 * @param board
+	 * @param unit reference to the unit, their TileWrappers adjacent tiles are checked
+	 * @return adjacent tiles with provoke
+	*/
 	public static List<TileWrapper> getAdjacentTilesWithProvoke(TileWrapper[][] board, UnitWrapper unit) {
 		List<TileWrapper> tileWrappers = getAdjacentTiles(board, unit);
 		List<TileWrapper> adjacentTiles = new ArrayList<TileWrapper>();
@@ -69,7 +81,7 @@ public class TileLocator {
 		for (TileWrapper tileWrapper:tileWrappers) {
 			if(tileWrapper.getHasUnit()) {
 				if (tileWrapper.getUnit().getName().equals("Swamp Entangler")
-					   ||tileWrapper.getUnit().getName().equals("Silverguard Knight") && tileWrapper.getUnit().getHealth() > 0) {
+				    ||tileWrapper.getUnit().getName().equals("Silverguard Knight") && tileWrapper.getUnit().getHealth() > 0) {
 						adjacentTiles.add(tileWrapper);
 					}
 			}
@@ -78,146 +90,81 @@ public class TileLocator {
 		return adjacentTiles;
 	}
 
-	public static ArrayList<TileWrapper> getAdjacentTilesToPlayerUnits(GameState gameState) {
-		TileWrapper[][] board = gameState.getBoard().getBoard();
-        ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
-        ArrayList<TileWrapper> adjacentTiles = new ArrayList<>();
+	/**
+	 * Retrieves 
+	 * @param board
+	 * @param unit reference to the unit, their TileWrappers adjacent tiles are checked
+	 * @return adjacent tiles with provoke
+	*/
 
-        for(UnitWrapper unit:units) {
-            adjacentTiles.addAll(TileLocator.getAdjacentTiles(board, unit))  ;
-        }
+	public static List<TileWrapper> getValidSpawnTiles(GameState gameState) {
+    TileWrapper[][] board = gameState.getBoard().getBoard();
+    List<UnitWrapper> units = gameState.getAIPlayer().getUnits();
 
-        return adjacentTiles;
-	}
-
-	public static ArrayList<TileWrapper> getValidSpawnTiles(GameState gameState) {
-		ArrayList<TileWrapper> validTiles = new ArrayList<>();
-		ArrayList<TileWrapper> adjacentTiles = getAdjacentTilesToPlayerUnits(gameState);
-
-		for (TileWrapper tileWrapper:adjacentTiles) {
-			if (tileWrapper.getHasUnit() == false) {
-				validTiles.add(tileWrapper);
-			}
-		}
-
-		return validTiles;
-	}
+    return units.stream()
+            .flatMap(unit -> TileLocator.getAdjacentTiles(board, unit).stream())
+            .filter(tileWrapper -> !tileWrapper.getHasUnit())
+            .collect(Collectors.toList());
+    }
 
 	public static ArrayList<TileWrapper> getAdjacentTilesWithEnemyUnit(GameState gameState, UnitWrapper unitWrapper) {
-		TileWrapper[][] board = gameState.getBoard().getBoard();
-		List<TileWrapper> tiles = getAdjacentTiles(board, unitWrapper);
-		ArrayList<UnitWrapper> AIUnits = gameState.getAIPlayer().getUnits();
-		ArrayList<TileWrapper> enemyTileWrappersWithUnit = new ArrayList<>();
-
-		for (TileWrapper tile: tiles) {
-			if (tile.getHasUnit()) {
-				UnitWrapper unit = tile.getUnit();
-				if (!AIUnits.contains(unit)) {
-					enemyTileWrappersWithUnit.add(tile);
-				}
-			}
-		}
-
-		return enemyTileWrappersWithUnit;
+		return getAdjacentTiles(gameState.getBoard().getBoard(), unitWrapper).stream()
+				.filter(tile -> tile.getHasUnit() && !gameState.getAIPlayer().getUnits().contains(tile.getUnit()))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public static ArrayList<TileWrapper> getAdjacentTilesWithAIEnemyUnit(GameState gameState, List<TileWrapper> validTiles) {
-		ArrayList<TileWrapper> tiles = new ArrayList<>();
-		ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
-		TileWrapper[][] board = gameState.getBoard().getBoard();
-		ArrayList<TileWrapper> tilesWithAttackableUnit = new ArrayList<>();
-
-		for (TileWrapper tile:validTiles) {
-			tiles.addAll(TileLocator.getAdjacentTiles(board, tile));
-		}
-
-		for (TileWrapper tile:tiles) {
-			if (tile.getHasUnit()) {
-				if (!units.contains(tile.getUnit())) {
-					tilesWithAttackableUnit.add(tile);
-				}
-			}
-		}
-
-		return tilesWithAttackableUnit;
+		return validTiles.stream()
+				.flatMap(tile -> getAdjacentTiles(gameState.getBoard().getBoard(), tile).stream())
+				.filter(tile -> tile.getHasUnit() && !gameState.getHumanPlayer().getUnits().contains(tile.getUnit()))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
-
 	
 	public static ArrayList<TileWrapper> getAdjacentTilesWithoutUnit(GameState gameState, UnitWrapper unitWrapper) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		List<TileWrapper> adjacentTiles = TileLocator.getAdjacentTiles(board, unitWrapper);
-		ArrayList<TileWrapper> validTiles = new ArrayList<>();
-
-		for (TileWrapper tileWrapper: adjacentTiles) {
-			if (!tileWrapper.getHasUnit()) {
-				validTiles.add(tileWrapper);
-			}
-		}
-
-		return validTiles;
+	
+		return adjacentTiles.stream()
+				.filter(tile -> !tile.getHasUnit())
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public static TileWrapper getHumanAvatarTile(GameState gameState) {
-        ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
-        for (UnitWrapper unitWrapper : units) {
-            if (unitWrapper instanceof Avatar) {
-                return unitWrapper.getTile();
-            }
-        }
-        return null; // Return null if the avatar tile is not found
-    }
+		return gameState.getHumanPlayer().getUnits().stream()
+				.filter(unit -> unit instanceof Avatar)
+				.findFirst()
+				.map(UnitWrapper::getTile)
+				.orElse(null);
+	}
 
 	public static List<TileWrapper> getValidTilesAdjacentToHumanAvatar(GameState gameState) {
 		TileWrapper humanAvatar = TileLocator.getHumanAvatarTile(gameState);
-		TileWrapper [][] board = gameState.getBoard().getBoard();
-
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+	
 		List<TileWrapper> validTiles = TileLocator.getAdjacentTiles(board, humanAvatar.getUnit());
-		ArrayList<TileWrapper> tilesWithoutUnits = new ArrayList<>();
-
-		for (TileWrapper tileWrapper : validTiles) {
-			if (!tileWrapper.getHasUnit()) {
-				tilesWithoutUnits.add(tileWrapper);
-			}
-		}
-
+		
 		System.out.println("NUMBER OF VALID TILES: " + validTiles.size()); // test
-
-		return tilesWithoutUnits;
+	
+		return validTiles.stream()
+				.filter(tileWrapper -> !tileWrapper.getHasUnit())
+				.collect(Collectors.toList());
 	}
 
 	public static boolean isAdjacentToHumanUnit(GameState gameState, UnitWrapper unitWrapper) {
-		TileWrapper[][] board = gameState.getBoard().getBoard();
 		ArrayList<UnitWrapper> units = gameState.getHumanPlayer().getUnits();
-
-		List<TileWrapper> adjacentTiles = TileLocator.getAdjacentTiles(board, unitWrapper);
-
-		for (TileWrapper tileWrapper: adjacentTiles) {
-			if (tileWrapper.getHasUnit() ) {
-				UnitWrapper unit = tileWrapper.getUnit();
-				if (units.contains(unit)) {
-					return true;
-				}
-				
-			}
-		}
-
-		return false;
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+	
+		return TileLocator.getAdjacentTiles(board, unitWrapper).stream()
+				.anyMatch(tileWrapper -> tileWrapper.getHasUnit() && units.contains(tileWrapper.getUnit()));
 	}
 
 	public static TileWrapper getClosestTileToHumanAvatar(GameState gameState, List<TileWrapper> validTiles) {
 		TileWrapper humanTileWrapper = TileLocator.getHumanAvatarTile(gameState);
-		int minDistance = Integer.MAX_VALUE;
-		TileWrapper closestTile = null;
-
-		for (TileWrapper tileWrapper : validTiles) {
-			int distance = calculateDistance(tileWrapper, humanTileWrapper);
-			if (distance < minDistance) {
-				minDistance = distance;
-				closestTile = tileWrapper;
-			}
-		}
-	
-		return closestTile;
+		
+		return validTiles.stream()
+				.min((tile1, tile2) -> Integer.compare(calculateDistance(tile1, humanTileWrapper),
+													   calculateDistance(tile2, humanTileWrapper)))
+				.orElse(null);
 	}
 
 	private static int calculateDistance(TileWrapper tile1, TileWrapper tile2) {
@@ -284,16 +231,6 @@ public class TileLocator {
 		// Tiles are adjacent if the difference in row and column indices is at most 1
 		return Math.abs(row1 - row2) <= 1 && Math.abs(col1 - col2) <= 1;
 	}
-	
-	
-
-
-
-
-	
-
-
-	
 }
 
 
