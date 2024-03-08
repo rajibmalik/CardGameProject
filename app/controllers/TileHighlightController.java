@@ -1,5 +1,6 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import akka.actor.ActorRef;
@@ -110,7 +111,7 @@ public class TileHighlightController {
 
 	public static void setUnitMovementTileHighlight(ActorRef out, GameState gameState, UnitWrapper unit) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
-		highlightTilesForUnitMovement(out, unit, board);
+		highlightTilesForUnitMovement(out, gameState, unit, board);
 	}
 
 	/**
@@ -176,29 +177,29 @@ public class TileHighlightController {
 	 * @param board
 	 */
 
-	private static void highlightTilesForUnitMovement(ActorRef out, UnitWrapper unit, TileWrapper[][] board) {
+	private static void highlightTilesForUnitMovement(ActorRef out, GameState gameState, UnitWrapper unit, TileWrapper[][] board) {
 		TileWrapper unitPosition = unit.getTile();
-		
-		// highlight tiles directly adjacent to unit
-		highlightTilesAroundUnit(out, unit, board);
+		List<TileWrapper> validTiles = TileLocator.getTilesForUnitMovement(unitPosition.getUnit(), board);
 
-		// Highlight tiles 2 squares above, below, left, and right of the unit 
-		int[] directions = { -2, 0, 2 };
-		for (int i : directions) {
-			for (int j : directions) {
-				int newX = unitPosition.getXpos() + i;
-				int newY = unitPosition.getYpos() + j;
-
-				// Check if the new coordinates are within the bounds of the board
-				if (newX >= 0 && newX < board.length && newY >= 0 && newY < board[0].length) {
-					TileWrapper tileWrapper = board[newX][newY];
-
-					// Check if the tile is not already occupied by a unit
-					if (!isTileOccupied(board, newX, newY) && (i == 0 || j == 0)) { // Only highlight if the movement is horizontal or vertical
-						highlightTileWhite(out,tileWrapper.getTile());
-					}
-				}
+		for (TileWrapper tileWrapper:validTiles) {
+			if (tileWrapper != unitPosition && !tileWrapper.getHasUnit()) {
+				highlightTileWhite(out, tileWrapper.getTile());
 			}
+			
+		}
+
+		highlightTilesForUnitMovementAndAttack(out, gameState, validTiles);
+	}
+
+	private static void highlightTilesForUnitMovementAndAttack(ActorRef out, GameState gameState, List<TileWrapper> validTiles) {
+		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithAIEnemyUnit(gameState, validTiles);
+
+		for (TileWrapper tileWrapper:attackableTiles) {
+			tileWrapper.getTile().setHighlightStatus(2);
+			
+			BasicCommands.drawTile(out, tileWrapper.getTile(), 2);
+			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
+
 		}
 	}
 	
@@ -303,5 +304,11 @@ public class TileHighlightController {
 			e.printStackTrace();
 		}
 	}
+
+
+	
+	
+
+	
 
 }
