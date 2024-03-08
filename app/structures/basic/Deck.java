@@ -15,6 +15,7 @@ import abilities.BeamShock;
 import abilities.DarkTerminus;
 import abilities.Deathwatch;
 import abilities.HornOfTheForsaken;
+import abilities.OpeningGambit;
 import abilities.SpellAbility;
 import abilities.SummonWraithling;
 import abilities.SundropElixir;
@@ -100,6 +101,12 @@ public class Deck {
 			return ability = new Deathwatch(0, 1);
 		} else if (name.equals("Silverguard Knight")) {
 			return ability = new Zeal();
+		} else if (name.equals("Gloom Chaser")) {
+			return ability = new OpeningGambit();
+		}else if (name.equals("Nightsorrow Assassin")) {
+			return ability = new OpeningGambit();
+		}else if (name.equals("Silverguard Squire")) {
+			return ability = new OpeningGambit();
 		}
 		return ability;
 

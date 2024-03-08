@@ -199,16 +199,7 @@ public class UnitController {
 
 	public static void unitDeathBackend(ActorRef out, GameState gameState, Player currentPlayer, UnitWrapper unitDying) {
 		unitDealth(gameState, unitDying);
-
-		// Create a copy of the units list to avoid ConcurrentModificationException
-		List<UnitWrapper> unitsCopy = new ArrayList<>(gameState.getHumanPlayer().getUnits());
-
-		for (UnitWrapper unit : unitsCopy) {
-			if (unit.getAbility() instanceof Deathwatch) {
-				unit.useAbility(out, gameState, unit);
-			}
-		}
-
+		PlayerController.applyDeathWatch(out, gameState);
 	}
 
 	public static void unitDealth(GameState gameState, UnitWrapper unitWrapper) {
@@ -295,6 +286,17 @@ public class UnitController {
 		}
 	}
 	
+	//Destory's a unit belonging to the AI player 
+	public static void destroyHumanPlayerEnemy(ActorRef out, GameState gameState, TileWrapper targetTile) {
+		Player aiPlayer = gameState.getAIPlayer();
+		UnitWrapper unitDying = targetTile.getUnit();
+
+		targetTile.getUnit().setHealth(0);
+		UnitController.unitDeathBackend(out, gameState, aiPlayer,  unitDying);
+		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unitDying);
+	}
+
+	
 	public static void moveUnit(ActorRef out, GameState gameState, UnitWrapper unitWrapper, TileWrapper tileWrapper) {
 		Tile tile = tileWrapper.getTile();
 		moveUnitBackend(unitWrapper, tileWrapper);
@@ -322,5 +324,34 @@ public class UnitController {
 		Unit unit = unitWrapper.getUnit();
 		BasicCommands.moveUnitToTile(out, unit, tile);
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
+	}
+
+	public static void increaseAttack(ActorRef out, UnitWrapper unit, int i) {
+		if(unit!=null) {
+			unit.setAttack(unit.getAttack() + i);
+			increaseAttackFrontend(out,unit);
+		}
+	}
+	
+	public static void increaseAttackFrontend(ActorRef out, UnitWrapper unit) {
+		int attack = unit.getAttack();
+		BasicCommands.setUnitAttack(out, unit.getUnit(), attack);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		
+	}
+
+	public static void increaseHealth(ActorRef out, UnitWrapper unit, int i) {
+		if(unit!=null) {
+			unit.setHealth(unit.getHealth() + i);
+			increaseHealthFrontend(out,unit);
+		}
+		
+	}
+	
+	public static void increaseHealthFrontend(ActorRef out, UnitWrapper unit) {
+		int health = unit.getHealth();
+		BasicCommands.setUnitHealth(out, unit.getUnit(), health);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		
 	}
 }

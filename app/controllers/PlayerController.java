@@ -1,7 +1,10 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import abilities.Deathwatch;
+import abilities.OpeningGambit;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
@@ -55,7 +58,7 @@ public class PlayerController {
 		playerController.removeCardFromHand(cardWrapper.getId());
 
 	}
-	
+
 	public void removeCardFromHand(int id) {
 		ArrayList<CardWrapper> hand = player.getHand().getHand();
 
@@ -175,8 +178,6 @@ public class PlayerController {
 		}
 	}
 
-
-
 	public ArrayList<UnitWrapper> getUnits() {
 		return player.getUnits();
 	}
@@ -230,7 +231,7 @@ public class PlayerController {
 
 	public static void deductAndRenderMana(GameState gameState, ActorRef out, CardWrapper cardWrapper) {
 		Player currentPlayer = gameState.getCurrentPlayer();
-		
+
 		if (currentPlayer == gameState.getAIPlayer()) {
 			deductMana(gameState.getAIPlayer(), cardWrapper);
 			BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());
@@ -242,8 +243,9 @@ public class PlayerController {
 		} else if (currentPlayer == gameState.getHumanPlayer()) {
 			deductManaFromBackEnd(gameState, cardWrapper);
 			renderManaOnFrontEnd(out, gameState);
-		}	
+		}
 	}
+
 	private static void deductManaFromBackEnd(GameState gameState, CardWrapper cardWrapper) {
 		deductMana(gameState.getHumanPlayer(), cardWrapper);
 	}
@@ -256,8 +258,6 @@ public class PlayerController {
 			e.printStackTrace();
 		}
 	}
-	
-
 
 	public static boolean canPlayCard(GameState gameState, CardWrapper cardWrapper) {
 		if (cardWrapper.getManaCost() <= gameState.getCurrentPlayer().getMana()) {
@@ -266,6 +266,33 @@ public class PlayerController {
 
 		return false;
 	}
+	
+	public static void applyOpeningGambit(ActorRef out, GameState gameState) {
+		List<UnitWrapper> humanUnits = new ArrayList<>(gameState.getHumanPlayer().getUnits());
+		for (UnitWrapper gambitUnit : humanUnits) {
+			if (gambitUnit.getAbility() instanceof OpeningGambit) {
+				gambitUnit.useAbility(out, gameState, gambitUnit);
+			}
+		}
+		List<UnitWrapper> aiUnits = new ArrayList<>(gameState.getAIPlayer().getUnits());
+		for (UnitWrapper gambitUnit : aiUnits) {
+			if (gambitUnit.getAbility() instanceof OpeningGambit) {
+				gambitUnit.useAbility(out, gameState, gambitUnit);
+			}
+		}
+	}
+	
+	
+	public static void applyDeathWatch(ActorRef out, GameState gameState) {
+		List<UnitWrapper> humanUnits = new ArrayList<>(gameState.getHumanPlayer().getUnits());
+		for (UnitWrapper unit : humanUnits) {
+			if (unit.getAbility() instanceof Deathwatch) {
+				unit.useAbility(out, gameState, unit);
+			}
+		}
+	}
+
+	
 
 	public static void playCard(ActorRef out, GameState gameState, CardWrapper clickedCard, TileWrapper tileWrapper) {
 		Tile tile = tileWrapper.getTile();
@@ -280,10 +307,10 @@ public class PlayerController {
 			SpellCard spellCard = (SpellCard) clickedCard;
 			spellCard.applySpellAbility(out, gameState, tileWrapper);
 		}
+		applyOpeningGambit(out, gameState); 
 		deductAndRenderMana(gameState, out, clickedCard);
 		removeCard(out, gameState, clickedCard);
-		
-	}
 
+	}
 
 }
