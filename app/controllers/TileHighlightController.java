@@ -207,7 +207,7 @@ public class TileHighlightController {
 	 * @param validTiles reference to the tiles which a UnitWrapper can move to
 	 */
 	private static void highlightTilesForUnitMovementAndAttack(ActorRef out, GameState gameState, List<TileWrapper> validTiles) {
-		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithAIEnemyUnit(gameState, validTiles);
+		ArrayList<TileWrapper> attackableTiles = TileLocator.getAdjacentTilesWithEnemyUnit(gameState, validTiles);
 
 		for (TileWrapper tileWrapper:attackableTiles) {
 			tileWrapper.getTile().setHighlightStatus(2);
