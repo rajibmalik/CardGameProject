@@ -6,6 +6,7 @@ import akka.actor.ActorRef;
 import commands.BasicCommands;
 import controllers.AIPlayerController;
 import controllers.PlayerController;
+import structures.basic.Avatar;
 import structures.basic.Board;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
@@ -199,7 +200,25 @@ public void resetAIUnitMovementAndAttack() {
 		return false;
 	}
 
-	
-	
-	
+	// announcing game result
+	public void announceResult(ActorRef out, GameState gameState, Player player) {
+		Player aiPlayer = gameState.getAIPlayer();
+		Player humanPlayer = gameState.getHumanPlayer();
+		String result;
+		if (isHealthZero(aiPlayer)) {
+			result = "VICTORY"; // if AI Player's avatar health is zero then the human player has won
+		} else if (isHealthZero(humanPlayer)) {
+			result = "DEFEAT"; // if human Player's avatar health is zero then they lost the game
+		} else { // no outcome yet
+			return;
+		}
+
+		// send notification to player interface
+		BasicCommands.addPlayer1Notification(out, "Game Result: " + result, 10); // Display for 10 seconds
+	}
+
+	// checks if either avatar reaches zero health, if so it returns true
+	private static boolean isHealthZero(Player player) {
+		return player.getUnits().stream().anyMatch(unit -> unit instanceof Avatar && unit.getHealth() <= 0);
+	}
 }
