@@ -1,5 +1,13 @@
 package structures.basic;
 
+/**
+ * This class is the backend representation of a tile.
+ * It contains information about the tile's position, associated tile object,
+ * and whether it currently has a unit placed on it.
+ * @author Darby Christy
+ */
+
+
 public class TileWrapper {
 	
 	private Tile tile; 

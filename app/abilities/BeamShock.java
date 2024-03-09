@@ -6,9 +6,17 @@ import structures.basic.Avatar;
 import structures.basic.Player;
 import structures.basic.TileWrapper;
 import structures.basic.UnitWrapper;
+/**
+ * This class is responsible for the BeamShock spell ability.
+ * @author Darby christy
+ */
 
 public class BeamShock implements SpellAbility {
 
+	/**
+	 * When this method is called the targetTile will temporarily stunned, preventing the unit from moving or attacking
+	 * on the players next turn. The ability will not target avatar units. 
+	 */
 	@Override
 	public void castSpell(ActorRef out, GameState gameState, TileWrapper targetTile) {
 

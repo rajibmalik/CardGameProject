@@ -2,17 +2,18 @@ package abilities;
 
 import akka.actor.ActorRef;
 import commands.BasicCommands;
-import structures.GameState;
-import structures.basic.Avatar;
-import structures.basic.CardWrapper;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.TileWrapper;
 import structures.basic.Unit;
-import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
+
+/**
+ * Utility class used for summoning wraithling when abilities are applied. 
+ * @author Darby christy
+ */
 
 public class SummonWraithling {
 	
@@ -24,9 +25,7 @@ public class SummonWraithling {
 		unitWrapper.setTile(targetTile);
 		unitWrapper.setHasAttacked(true);
 		unitWrapper.setHasMoved(true);
-		player.addUnit(unitWrapper);
-
-		
+		player.addUnit(unitWrapper);		
 	}
 	
 	public static Unit renderWraithlingFrontEnd(ActorRef out, Player player, TileWrapper targetTile) {
