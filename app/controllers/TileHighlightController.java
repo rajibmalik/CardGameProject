@@ -318,4 +318,17 @@ public class TileHighlightController {
 			e.printStackTrace();
 		}
 	}
+
+	public static void initialHighlightBoard(ActorRef out, GameState gameState) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 5; j++) {
+				Tile tile = board[i][j].getTile();
+				BasicCommands.drawTile(out, tile, 0);
+				try {Thread.sleep(5);} catch (InterruptedException e) {e.printStackTrace();}
+			}
+		}
+
+	}
 }

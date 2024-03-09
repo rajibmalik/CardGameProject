@@ -53,6 +53,40 @@ public class UnitController {
 		return unit;
 	}
 
+	public static Unit renderAIAvatar(ActorRef out, GameState gameState) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		Tile tile = board[7][2].getTile();
+		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 1, Unit.class);
+		unit.setPositionByTile(tile); 
+		BasicCommands.drawUnit(out, unit, tile);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitAttack(out, unit, 2);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, unit, 20);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		return unit;
+	}
+
+	public static Unit renderPlayerAvatar(ActorRef out, GameState gameState) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		Tile tile = board[1][2].getTile();
+		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.humanAvatar, 0, Unit.class);
+		unit.setPositionByTile(tile); 
+		BasicCommands.drawUnit(out, unit, tile);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitAttack(out, unit, 2);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, unit, 20);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		return unit;
+	}
+
 	// creates a backend UnitWrapper object
 	public static void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
 		String name = unitCard.getName();
@@ -112,7 +146,7 @@ public class UnitController {
 		ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
 
 		if (attackedUnit instanceof Avatar && attackedUnit.getName().equals("AI")) {
-			if (attackingUnit.getAttack() > 0 && checkForZeal(gameState)) {
+			if (attackingUnit.getAttack() > 0 && Zeal.checkForZeal(gameState)) {
 				for (UnitWrapper unitWrapper : units) {
 					if (unitWrapper.getAbility() instanceof Zeal) {
 						unitWrapper.useAbility(out, gameState, unitWrapper);
@@ -131,19 +165,6 @@ public class UnitController {
 		}
 	}
 
-	// helper method to check if zeal can be applied
-	private static boolean checkForZeal(GameState gameState) {
-		ArrayList<UnitWrapper> units = gameState.getAIPlayerController().getUnits();
-
-		for (UnitWrapper unitWrapper : units) {
-			if (unitWrapper.getAbility() instanceof Zeal) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	
 	private static void unclickAllUnits(GameState gameState) {
 		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
 			unit.setHasBeenClicked(false);
@@ -191,7 +212,7 @@ public class UnitController {
 
 		// applies zeal if applicable after inital frontend unit updated 
 
-		if (checkForZeal(gameState)) {
+		if (Zeal.checkForZeal(gameState)) {
 			applyZeal(out, gameState, attackingUnit, unitWrapperAttacked);
 		}
 
@@ -272,6 +293,7 @@ public class UnitController {
 				}
 				if (gameState.getHumanPlayer().getHealth()<1) {
 					gameState.announceResult(out, gameState, gameState.getHumanPlayer());
+					gameState.credits(out, gameState, gameState.getHumanPlayer());
 				}
 			}
 		}
@@ -287,6 +309,7 @@ public class UnitController {
 				}
 				if (gameState.getAIPlayer().getHealth()<1) {
 					gameState.announceResult(out, gameState, gameState.getAIPlayer());
+					gameState.credits(out, gameState, gameState.getAIPlayer());
 				}
 			}
 		}

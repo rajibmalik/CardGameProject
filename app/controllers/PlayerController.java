@@ -8,6 +8,7 @@ import abilities.OpeningGambit;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
+import structures.basic.Avatar;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
@@ -310,7 +311,54 @@ public class PlayerController {
 		applyOpeningGambit(out, gameState); 
 		deductAndRenderMana(gameState, out, clickedCard);
 		removeCard(out, gameState, clickedCard);
+	}
 
+	public void initializePlayer(ActorRef out, GameState gameState) {
+
+	}
+
+	public static void renderInitialHand(ActorRef out, GameState gameState) {
+
+		Hand hand = gameState.getPlayerHand();
+		int handPosition = 1;
+
+		for (CardWrapper cardWrapper:hand.getHand()) {
+			BasicCommands.drawCard(out, cardWrapper.getCard(), handPosition, 1);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+			handPosition ++;
+
+			if (handPosition == 4) {
+				break;
+			}
+		}
+	}
+
+	public static Player setPlayerAvatar(GameState gameState, Unit unit) {
+		Player humanPlayer = gameState.getHumanPlayer();
+
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		TileWrapper tileWrapper = board[1][2];
+		Avatar avatar = new Avatar(unit, "Human Avatar", 20, 2, humanPlayer, null, tileWrapper);
+
+		tileWrapper.setUnitWrapper(avatar);
+		tileWrapper.setHasUnit(true);
+		avatar.setTile(tileWrapper);
+		humanPlayer.addUnit(avatar);
+
+		return humanPlayer;
+	}
+	
+	public static void setInitialMana(ActorRef out, PlayerController playerController) {
+		int turn = playerController.getTurn();
+		int mana = turn + 1;
+
+		Player player = playerController.getPlayer();
+		player.setMana(mana);
+		
+		BasicCommands.setPlayer1Mana(out, playerController.getPlayer());
 	}
 
 }
