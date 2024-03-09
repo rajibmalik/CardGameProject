@@ -221,4 +221,13 @@ public void resetAIUnitMovementAndAttack() {
 	private static boolean isHealthZero(Player player) {
 		return player.getUnits().stream().anyMatch(unit -> unit instanceof Avatar && unit.getHealth() <= 0);
 	}
+
+	public void credits(ActorRef out, GameState gameState, Player player) {
+		BasicCommands.addPlayer1Notification(out, "Ashling Curran", 5);
+		BasicCommands.addPlayer1Notification(out, "Darby Christy", 5);
+		BasicCommands.addPlayer1Notification(out, "Eldhos Thomas", 5);
+		BasicCommands.addPlayer1Notification(out, "Matthew Wilson", 5);
+		BasicCommands.addPlayer1Notification(out, "Rajib Malik", 5);
+	}
+
 }

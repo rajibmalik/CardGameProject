@@ -112,7 +112,7 @@ public class UnitController {
 		ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
 
 		if (attackedUnit instanceof Avatar && attackedUnit.getName().equals("AI")) {
-			if (attackingUnit.getAttack() > 0 && checkForZeal(gameState)) {
+			if (attackingUnit.getAttack() > 0 && Zeal.checkForZeal(gameState)) {
 				for (UnitWrapper unitWrapper : units) {
 					if (unitWrapper.getAbility() instanceof Zeal) {
 						unitWrapper.useAbility(out, gameState, unitWrapper);
@@ -131,19 +131,6 @@ public class UnitController {
 		}
 	}
 
-	// helper method to check if zeal can be applied
-	private static boolean checkForZeal(GameState gameState) {
-		ArrayList<UnitWrapper> units = gameState.getAIPlayerController().getUnits();
-
-		for (UnitWrapper unitWrapper : units) {
-			if (unitWrapper.getAbility() instanceof Zeal) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	
 	private static void unclickAllUnits(GameState gameState) {
 		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
 			unit.setHasBeenClicked(false);
@@ -191,7 +178,7 @@ public class UnitController {
 
 		// applies zeal if applicable after inital frontend unit updated 
 
-		if (checkForZeal(gameState)) {
+		if (Zeal.checkForZeal(gameState)) {
 			applyZeal(out, gameState, attackingUnit, unitWrapperAttacked);
 		}
 
@@ -272,6 +259,7 @@ public class UnitController {
 				}
 				if (gameState.getHumanPlayer().getHealth()<1) {
 					gameState.announceResult(out, gameState, gameState.getHumanPlayer());
+					gameState.credits(out, gameState, gameState.getHumanPlayer());
 				}
 			}
 		}
