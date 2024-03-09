@@ -19,6 +19,11 @@ import utils.TileLocator;
 /**
  * This class is responsible for the AI decision making during the AI players turn. This includes
  * playing unit cards, spell cards, moving units, attacking units and ending turn.
+ * 
+ * It used the following parameters: 
+ * - out: reference to the actor for frontend communication 
+ * - gameState: current state o the game
+ * 
  * @author Rajib Malik
 */
 
@@ -28,7 +33,7 @@ public class AIPlayerController extends PlayerController {
         super(player);
     }
 
-   /**
+    /**
      * This method executes the AI player's turn, performing actions such as playing a unit card, 
      * playing a spell card, moving units, attacking units and ending the turn.
     */
@@ -160,7 +165,8 @@ public class AIPlayerController extends PlayerController {
 
     /**
      * Checks if the player has enough mana to play a card and if there is a valid tile to play a UnitCard.
-     * @return
+     * @isUnitCard reference to if the card is an instance of a UnitCard
+     * @return boolean if the card can be played
     */
     public boolean canPlayCard(GameState gameState, boolean isUnitCard) {
         if (isUnitCard) {
@@ -175,7 +181,7 @@ public class AIPlayerController extends PlayerController {
 
     /**
      * This class is a helper method to return the lowest cost of a UnitCard from the players hand
-     * @return
+     * @return int of the lowest cost card price in mana
     */
     private int getLowestCostUnitCardPrice() {
         ArrayList<UnitCard> unitCards = super.getUnitCards();
@@ -194,7 +200,7 @@ public class AIPlayerController extends PlayerController {
 
     /**
      * This class is a helper method to retrieve the lowest cost UnitCard from the players hand
-     * @return
+     * @return the UnitCard instance of the lowest cost unit card
     */
     private UnitCard getLowestCostUnitCard() {
         ArrayList<UnitCard> unitCards = super.getUnitCards();
@@ -210,7 +216,7 @@ public class AIPlayerController extends PlayerController {
 
     /**
      * This class is a helper method to retrieve the highest cost UnitCard from the players hand
-     * @return
+     * @return the UnitCard instance of the highest cost unit card
     */
     private UnitCard getHighestCostUnitCard() {
         ArrayList<UnitCard> unitCards = super.getUnitCards();

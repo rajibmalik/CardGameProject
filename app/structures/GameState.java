@@ -215,6 +215,7 @@ public void resetAIUnitMovementAndAttack() {
 
 		// send notification to player interface
 		BasicCommands.addPlayer1Notification(out, "Game Result: " + result, 10); // Display for 10 seconds
+		try {Thread.sleep(10000);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 
 	// checks if either avatar reaches zero health, if so it returns true
@@ -223,10 +224,16 @@ public void resetAIUnitMovementAndAttack() {
 	}
 
 	public void credits(ActorRef out, GameState gameState, Player player) {
+		BasicCommands.addPlayer1Notification(out, "Credits:", 5);
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 		BasicCommands.addPlayer1Notification(out, "Ashling Curran", 5);
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 		BasicCommands.addPlayer1Notification(out, "Darby Christy", 5);
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 		BasicCommands.addPlayer1Notification(out, "Eldhos Thomas", 5);
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 		BasicCommands.addPlayer1Notification(out, "Matthew Wilson", 5);
+		try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 		BasicCommands.addPlayer1Notification(out, "Rajib Malik", 5);
 	}
 
