@@ -8,11 +8,13 @@ import controllers.AIPlayerController;
 import controllers.PlayerController;
 import structures.basic.Avatar;
 import structures.basic.Board;
+import structures.basic.Card;
 import structures.basic.CardWrapper;
 import structures.basic.Deck;
 import structures.basic.Hand;
 import structures.basic.Player;
 import structures.basic.UnitWrapper;
+import utils.OrderedCardLoader;
 
 /**
  * This class can be used to hold information about the on-going game. Its
@@ -128,6 +130,50 @@ public void resetAIUnitMovementAndAttack() {
 			currentPlayer = aiPlayer;
 		} else {
 			currentPlayer = humanPlayer;
+		}
+	}
+	
+	public void endTurnPlayerSwitch(ActorRef out, GameState gameState, Player currentPlayer) {
+
+		gameState.switchPlayer();
+
+		Player nextPlayer = gameState.getCurrentPlayer();
+
+		if (nextPlayer == gameState.getAIPlayer()) {
+			gameState.getAIPlayerController().setTurnMana();
+			BasicCommands.addPlayer1Notification(out, "Player 2 turn", 1);
+			BasicCommands.setPlayer2Mana(out, nextPlayer);	
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			if (gameState.getAIPlayerController().getTurn()==1) {
+				gameState.getAIPlayerController().drawInitialHand();
+			}	
+
+			// draws and renders a card for the human
+			drawCard(gameState.getHumanPlayerController(), out); 
+			
+		} else if (nextPlayer == gameState.getHumanPlayer()) {
+			gameState.getHumanPlayerController().setTurnMana();
+			BasicCommands.setPlayer1Mana(out, nextPlayer);
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			// draws a card for the AI in the backend
+			gameState.getAIPlayerController().drawCard(); 
+		}
+	}
+
+	// draws a card in back end for player & renders the card
+	private void drawCard(PlayerController playerController, ActorRef out) {
+
+		if (playerController.drawCard()) {
+			List<Card> cards = OrderedCardLoader.getPlayer1Cards(2);
+			int topCardIndex  = playerController.getPlayerDeck().getTopCardIndex() - 1;
+			Card topCard = cards.get(topCardIndex);
+
+			BasicCommands.drawCard(out, topCard, playerController.getPlayerHand().getHand().size(), 1);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

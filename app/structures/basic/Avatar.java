@@ -10,7 +10,7 @@ public class Avatar extends UnitWrapper {
 
 	public Avatar(Unit unit, String name, int health, int attack, Player player, UnitAbility ability,
 			TileWrapper tile) {
-		super(unit, name, 20, 2, player, ability, tile); // Player avatar is initialised with 2 health and attack
+		super(unit, name, 20, 2, player, ability, tile); // Player avatar is initialised with 20 health and 2 attack
 		this.robustness = 0;
 		this.artifactActive = false;
 	}
@@ -32,12 +32,10 @@ public class Avatar extends UnitWrapper {
 	}
 
 	public void decreaseRobustness() {
-		int newRoustness = this.robustness--;
-		if (newRoustness <= 0) {
-			setArtifactActive(false);
-		} else {
-			this.robustness--;
-		}
+		this.robustness--;
 
+		if (this.robustness <= 0) {
+			setArtifactActive(false);
+		}
 	}
 }
