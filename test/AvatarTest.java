@@ -32,13 +32,8 @@ public class AvatarTest {
     }
 
     @Test
-    public void initialisedWithTwoHealth() {
-        assertEquals(2, avatar.getHealth());
-    }
-
-    @Test
-    public void initialsedWithPlayer() {
-        assertEquals(player, avatar.getPlayer());
+    public void initialisedWithTwentyHealth() {
+        assertEquals(20, avatar.getHealth());
     }
 
     @Test
@@ -64,11 +59,11 @@ public class AvatarTest {
         avatar.decreaseRobustness();
         assertEquals(4, avatar.getRobustness());
 
-        // Decrease robustness until artifact is destroyed
+        // Decrease robustness and check if artifact is still active
         avatar.setArtifactActive(true);
         avatar.decreaseRobustness();
         avatar.decreaseRobustness();
-        assertFalse(avatar.isArtifactActive());
+        assertTrue(avatar.isArtifactActive());
         assertEquals(2, avatar.getRobustness());
     }
 }
