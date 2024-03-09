@@ -270,9 +270,12 @@ public class UnitController {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				if (gameState.getHumanPlayer().getHealth()<1) {
+					gameState.announceResult(out, gameState, gameState.getHumanPlayer());
+				}
 			}
 		}
-		// Find ai avatar and update player health to match
+		// Find AI avatar and update player health to match
 		for (UnitWrapper unit : gameState.getAIPlayer().getUnits()) {
 			if (unit instanceof Avatar) {
 				gameState.getAIPlayer().setHealth(unit.getHealth());
@@ -281,6 +284,9 @@ public class UnitController {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+				}
+				if (gameState.getAIPlayer().getHealth()<1) {
+					gameState.announceResult(out, gameState, gameState.getAIPlayer());
 				}
 			}
 		}
