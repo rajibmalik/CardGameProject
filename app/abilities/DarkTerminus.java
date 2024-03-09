@@ -8,8 +8,8 @@ import structures.basic.TileWrapper;
 /**
  * This class is responsible for the DarkTerminus spell ability. 
  * @author Darby Christy
+ * @author Rajib Malik
  */
-
 public class DarkTerminus implements SpellAbility {
 	
 	/**

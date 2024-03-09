@@ -6,6 +6,15 @@ import akka.actor.ActorRef;
 import structures.GameState;
 import structures.basic.UnitWrapper;
 
+/**
+ * This class implements UnitAbility. When applied, it increases the unit's attack by 2.
+ * It uses the following parameters: 
+ * - out: reference to the actor for frontend communication 
+ * - gameState: current state o the game
+ * 
+ * @author Rajib Malik
+*/
+
 public class Zeal implements UnitAbility{
 
     @Override

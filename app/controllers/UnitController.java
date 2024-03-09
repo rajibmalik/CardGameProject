@@ -53,6 +53,40 @@ public class UnitController {
 		return unit;
 	}
 
+	public static Unit renderAIAvatar(ActorRef out, GameState gameState) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		Tile tile = board[7][2].getTile();
+		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.aiAvatar, 1, Unit.class);
+		unit.setPositionByTile(tile); 
+		BasicCommands.drawUnit(out, unit, tile);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitAttack(out, unit, 2);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, unit, 20);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		return unit;
+	}
+
+	public static Unit renderPlayerAvatar(ActorRef out, GameState gameState) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		Tile tile = board[1][2].getTile();
+		Unit unit = BasicObjectBuilders.loadUnit(StaticConfFiles.humanAvatar, 0, Unit.class);
+		unit.setPositionByTile(tile); 
+		BasicCommands.drawUnit(out, unit, tile);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitAttack(out, unit, 2);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, unit, 20);
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+
+		return unit;
+	}
+
 	// creates a backend UnitWrapper object
 	public static void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
 		String name = unitCard.getName();

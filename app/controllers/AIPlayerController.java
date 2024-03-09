@@ -6,6 +6,7 @@ import java.util.List;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
+import structures.basic.Avatar;
 import structures.basic.CardWrapper;
 import structures.basic.Player;
 import structures.basic.SpellCard;
@@ -20,7 +21,7 @@ import utils.TileLocator;
  * This class is responsible for the AI decision making during the AI players turn. This includes
  * playing unit cards, spell cards, moving units, attacking units and ending turn.
  * 
- * It used the following parameters: 
+ * It uses the following parameters: 
  * - out: reference to the actor for frontend communication 
  * - gameState: current state o the game
  * 
@@ -116,17 +117,14 @@ public class AIPlayerController extends PlayerController {
     public void playAndRemoveSpell(ActorRef out, GameState gameState, SpellCard spellCard) {
         switch (spellCard.getName()) {
             case "Beamshock":
-                BasicCommands.addPlayer1Notification(out, "Playing Beamshock", 1);
                 System.out.println("Playing Beamshock");
                 SpellController.playBeamShock(out, gameState, spellCard);
                 break;
             case "Sundrop Elixir":
-                BasicCommands.addPlayer1Notification(out, "Playing Sundrop Elixir", 1);
                 System.out.println("Sundrop Elixir");
                 SpellController.playSundropElixir(out, gameState, spellCard);
                 break;  
             case "Truestrike":
-                BasicCommands.addPlayer1Notification(out, "Playing Truestrike", 1);
                 System.out.println("Truestrike");
                 SpellController.playTrueStrike(out, gameState, spellCard);
                 break;
@@ -258,6 +256,21 @@ public class AIPlayerController extends PlayerController {
     public void endTurn(GameState gameState) {
         gameState.switchPlayer();
         super.drawCard();
+    }
+
+    public static Player setAIPlayerAvatar(GameState gameState, Unit unit) {
+        Player aiPlayer = gameState.getAIPlayer();
+
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		TileWrapper tileWrapper = board[7][2];
+		
+		Avatar avatar = new Avatar(unit, "AI", 20, 2, aiPlayer, null, tileWrapper);
+		tileWrapper.setUnitWrapper(avatar);
+		tileWrapper.setHasUnit(true);
+		avatar.setTile(tileWrapper);
+		aiPlayer.addUnit(avatar);
+
+		return aiPlayer;
     }
 
 }
