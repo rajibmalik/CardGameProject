@@ -275,6 +275,7 @@ public class UnitController {
 				}
 				if (gameState.getAIPlayer().getHealth()<1) {
 					gameState.announceResult(out, gameState, gameState.getAIPlayer());
+					gameState.credits(out, gameState, gameState.getAIPlayer());
 				}
 			}
 		}
