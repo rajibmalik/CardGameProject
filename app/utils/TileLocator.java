@@ -273,16 +273,24 @@ public class TileLocator {
 		return null;
 	}
 
+
 	public static ArrayList<TileWrapper> getAdjacentEnemyBelowMaxHealth(GameState gameState, UnitWrapper unit) {
-		ArrayList<TileWrapper> adjacentTiles = TileLocator.getAdjacentTilesWithEnemyUnit(gameState, unit);
+		TileWrapper[][] board = gameState.getBoard().getBoard();
 		ArrayList<TileWrapper> enemiesBelowMaxHealth = new ArrayList<>();
 
-		for (TileWrapper tileWrapper : adjacentTiles) {
-			UnitWrapper enemyUnit = tileWrapper.getUnit();
-			if (enemyUnit.getHealth() < enemyUnit.getMaxHealth()) {
-				enemiesBelowMaxHealth.add(tileWrapper);
+		for (TileWrapper tile : getAdjacentTiles(board, unit)) {
+			int xpos = tile.getXpos();
+			int ypos = tile.getYpos();
+			// Check if the tile is occupied by a unit
+			if (isTileOccupied(board, xpos, ypos)) {
+				UnitWrapper enemyUnit = board[xpos][ypos].getUnit();
+				if(!gameState.getHumanPlayer().getUnits().contains(enemyUnit) 
+						&& enemyUnit.getHealth() < enemyUnit.getMaxHealth()){
+					enemiesBelowMaxHealth.add(enemyUnit.getTile());
+				}
 			}
 		}
+		
 
 		return enemiesBelowMaxHealth;
 	}

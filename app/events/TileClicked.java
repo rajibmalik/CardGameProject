@@ -81,8 +81,15 @@ public class TileClicked implements EventProcessor {
 		Tile tile = tileWrapper.getTile();
 		CardWrapper clickedCard = gameState.getClickedCard(gameState);
 		// If the tile is highlighted, and the card can be played, then play card
-		if (TileHighlightController.getTileHighlighted(tile) == 1 || TileHighlightController.getTileHighlighted(tile) == 2 && PlayerController.canPlayCard(gameState, clickedCard)) {
-			PlayerController.playCard(out,gameState,clickedCard,tileWrapper);
+		if (TileHighlightController.getTileHighlighted(tile) == 1 || TileHighlightController.getTileHighlighted(tile) == 2 
+				&& PlayerController.canPlayCard(gameState, clickedCard)) {
+			if (clickedCard.getName().equals("Wraithling Swarm")) {
+				SpellCard spellCard = (SpellCard) clickedCard;
+				spellCard.applySpellAbility(out, gameState, tileWrapper);
+		        } else {
+		            // Play other cards
+		        PlayerController.playCard(out,gameState,clickedCard,tileWrapper);
+		        }
 			System.out.println("A card was played");
 		} else {
 			clickedCard.setHasBeenClicked(false);
