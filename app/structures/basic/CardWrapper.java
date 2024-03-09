@@ -1,5 +1,12 @@
 package structures.basic;
 
+/**
+ * This class is the backend representation of a card.
+ * It holds information about the card's mana cost, name, click status,
+ * associated card object, and a unique identifier.
+ * @author Darby Christy, Eldhos Thomas
+ */
+
 public class CardWrapper {
     private int manaCost;
     private String name;

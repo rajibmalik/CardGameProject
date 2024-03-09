@@ -2,6 +2,13 @@ package structures.basic;
 
 import java.util.ArrayList;
 
+/**
+ * This class represents a player's hand, which is an array of CardWrapper objects.
+ * It provides methods to retrieve the hand, adding a card to the hand, and getting a card
+ * from a specific index in the hand.
+ * @author Darby Christy, Matthew Wilson 
+ */
+
 public class Hand {
     private ArrayList<CardWrapper> hand;
  

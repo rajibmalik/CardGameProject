@@ -5,9 +5,17 @@ import structures.GameState;
 import structures.basic.Player;
 import structures.basic.TileWrapper;
 import structures.basic.UnitWrapper;
+/**
+ * This class is responsible for the TrueStrike spell ability.
+ * @author Darby christy
+ */
+
 
 public class TrueStrike implements SpellAbility {
 
+	/**
+	 * Deals 2 damage to the targetTile
+	 */
     @Override
     public void castSpell(ActorRef out,GameState gameState, TileWrapper targetTile) {
     	Player currentPlayer = gameState.getCurrentPlayer();
@@ -32,3 +40,5 @@ public class TrueStrike implements SpellAbility {
         return !player.getUnits().contains(targetUnit);
     }
 }
+
+

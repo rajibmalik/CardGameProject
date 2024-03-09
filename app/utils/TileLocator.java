@@ -256,7 +256,7 @@ public class TileLocator {
 		// Tiles are adjacent if the difference in row and column indices is at most 1
 		return Math.abs(row1 - row2) <= 1 && Math.abs(col1 - col2) <= 1;
 	}
-
+	
 	// Method to get the unoccupied tile to the left of a unit
 	public static TileWrapper getTileLeftOfUnit(GameState gameState, UnitWrapper unitWrapper) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
@@ -264,11 +264,12 @@ public class TileLocator {
 		int x = tile.getXpos();
 		int y = tile.getYpos();
 		int newX = x - 1;
-		if (!isTileOccupied(board, newX, y) && newX >= 0) {
-			return board[newX][y];
-		} else {
-			System.out.println("Tile is occupied or out of bounds");
-		}
+		// Check if newX is a valid index before accessing the array
+	    if (newX >= 0 && !isTileOccupied(board, newX, y)) {
+	        return board[newX][y];
+	    } else {
+	        System.out.println("Tile is occupied or out of bounds");
+	    }
 
 		return null;
 	}
