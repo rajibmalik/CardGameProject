@@ -22,6 +22,7 @@ import structures.basic.UnitCard;
 import structures.basic.UnitWrapper;
 import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
+import utils.TileLocator;
 
 public class UnitController {
 
@@ -107,6 +108,106 @@ public class UnitController {
 		tileWrapper.setHasUnit(true);
 		unitWrapper.setTile(tileWrapper);
 		player.addUnit(unitWrapper);
+	}
+	
+	/**
+	 * Handles the logic when a unit is clicked, including highlighting tiles for unit movement
+	 * and potential enemy targets within range. This method considers various conditions, such as
+	 * whether the clicked unit has already moved or attacked, and whether it belongs to the current player.
+	 * @param out            
+	 * @param gameState      
+	 * @param currentPlayer 
+	 * @param tileWrapper    
+	 */
+	public static void handleUnitClick(ActorRef out, GameState gameState, Player currentPlayer, TileWrapper tileWrapper) {
+		TileWrapper[][] board = gameState.getBoard().getBoard();
+		TileHighlightController.removeBoardHighlight(out, gameState);
+		UnitWrapper unitWrapper = tileWrapper.getUnit();
+		//make sure not other units are clicked
+		gameState.unclickAllUnits(gameState);
+		// if friendly unit is clicked and it hasn't moved or attacked already,
+		// highlight tiles for movement			
+		if (unitWrapper != null && unitWrapper.getHasMoved() == false && unitWrapper.getHasAttacked() == false
+				&& currentPlayer.getUnits().contains(unitWrapper)) {
+			
+			if (TileLocator.getAdjacentTilesWithProvoke(board, unitWrapper).isEmpty()) {
+				System.out.println("Tiles highlighted for movement");
+				TileHighlightController.setUnitMovementTileHighlight(out, gameState, unitWrapper);
+				TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			} else {
+				System.out.println("Tiles highlighted for movement");
+				TileHighlightController.highlightProvokeEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			}
+
+			// If the unit has moved but not yet attacked, then highlight enemies in range
+		} else if (unitWrapper != null && unitWrapper.getHasMoved() == true && unitWrapper.getHasAttacked() == false
+				&& currentPlayer.getUnits().contains(unitWrapper)) {
+			if (TileLocator.getAdjacentTilesWithProvoke(board, unitWrapper).isEmpty()) {
+				TileHighlightController.highlightEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			} else {
+				TileHighlightController.highlightProvokeEnemyInRange(out, unitWrapper, board);
+				tileWrapper.getUnit().setHasBeenClicked(true);
+			}
+		}
+		
+		if(gameState.getClickedUnit(gameState)!=null) {
+			System.out.println("The clicked unit is " + gameState.getClickedUnit(gameState).getName());
+		}
+	}
+	
+	/**
+	 * Handles the logic when a tile is clicked to move a unit. If a unit has been clicked,
+	 * and the unit has not moved or attacked, this method triggers the movement of the unit
+	 * to the clicked tile. The method checks the unit's status before initiating the move.
+	 * @param out          
+	 * @param gameState   
+	 * @param tileWrapper  
+	 */
+	public static void handleTileClick(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
+		if (gameState.hasUnitBeenClicked(gameState)) {
+			UnitWrapper unitWrapper = gameState.getClickedUnit(gameState);
+			// If the unit has not moved or attacked, then move unit
+			if (unitWrapper.getHasMoved() == false && unitWrapper.getHasAttacked() == false) {
+				System.out.println("The unit" + unitWrapper.getName() + "has moved");
+				moveUnit(out,gameState,unitWrapper,tileWrapper);
+			}
+		}
+	}
+	
+	//move and attack logic 
+	public static void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
+		List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
+		UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
+	
+		if (tiles.contains(tileWrapper)) {
+			UnitWrapper unitWrapperAttacked = tileWrapper.getUnit();
+			// Attack unit
+			attackUnit(out, gameState, attackingUnitWrapper, unitWrapperAttacked);
+		} else {
+			TileWrapper[][] board = gameState.getBoard().getBoard();
+			UnitWrapper clickedUnit = gameState.getClickedUnit(gameState);
+			TileWrapper tileWrapperToMove = null;
+
+			List<TileWrapper> validTiles = TileLocator.getTilesForUnitMovement(clickedUnit, board);
+			List<TileWrapper> tilesAdjacentToAttackedUnit = TileLocator.getAdjacentTiles(board, tileWrapper);
+
+			for (TileWrapper tile:validTiles) {
+				if (tilesAdjacentToAttackedUnit.contains(tile)) {
+					tileWrapperToMove = tile;
+				}
+			}
+	
+			// If a valid tile to move to, move and attack 
+			if (tileWrapperToMove != null) {
+				moveUnit(out, gameState, attackingUnitWrapper, tileWrapperToMove);
+				attackUnit(out, gameState, attackingUnitWrapper, tileWrapper.getUnit());
+			} else {
+				System.out.println("No valid tile to move to that is also attackable.");
+			}
+		}
 	}
 
 	// logic for carrying out an attack on the front and backend, uses various helper classes
