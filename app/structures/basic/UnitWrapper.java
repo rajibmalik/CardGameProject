@@ -3,9 +3,16 @@ package structures.basic;
 import abilities.UnitAbility;
 import akka.actor.ActorRef;
 import structures.GameState;
+/**
+ * Represents a summoned unit on the game board.
+ * This class encapsulates the attributes and behavior of a unit, including its health, attack,
+ * position on the board, and abilities.
+ * Units are associated with a player and have a unique identifier.
+ * @author Rajib Malik
+*/
 
 public class UnitWrapper {
-	private Unit unit; // Unit reference to backend representation of a Unit
+	private Unit unit; 
 	private String name;
 	private final int maxHealth;
 	private int health;
@@ -14,11 +21,10 @@ public class UnitWrapper {
 	private boolean hasBeenClicked;
 	private boolean hasMoved;
 	private boolean hasAttacked;
-	private Player player; // Player reference to the owner of the unit
+	private Player player; 
 	private UnitAbility ability;
-	private final int id; // Unique identifier for each UnitWrapper, cannot be changed
-	public static int nextId = 1; // By setting this as static, each instance of UnitWrapper shares this variable
-									// allowing us to keep track of the counter
+	private final int id; 
+	public static int nextId = 1; 
 
 	// Default constructor
 	public UnitWrapper(Unit unit, String name, int health, int attack, Player player, UnitAbility ability,

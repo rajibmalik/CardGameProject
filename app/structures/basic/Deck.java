@@ -1,15 +1,6 @@
 package structures.basic;
-
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import abilities.BeamShock;
 import abilities.DarkTerminus;
@@ -17,29 +8,33 @@ import abilities.Deathwatch;
 import abilities.HornOfTheForsaken;
 import abilities.OpeningGambit;
 import abilities.SpellAbility;
-import abilities.SummonWraithling;
 import abilities.SundropElixir;
 import abilities.TrueStrike;
 import abilities.UnitAbility;
 import abilities.WraithlingSwarm;
 import abilities.Zeal;
-import commands.BasicCommands;
 import utils.OrderedCardLoader;
 
-// This class represents a deck object which is an arraylist, containing cardWrapper objects
-// which are generated from the card configuration files.
+/**
+ * This class represents the players deck which is made up of CardWrappers which can be either a UnitCard 
+ * or a SpellCard
+ * @author Rajib Malik
+*/
 
 public class Deck {
 	private ArrayList<CardWrapper> deck;
 	private int topCardIndex;
 
-	// "1" creates player deck
-	// "2" creates AI deck
 	public Deck(String deckNumber) {
 		this.deck = new ArrayList<>();
 		createDeck(deckNumber);
 	}
 
+	/**
+     * This method is responsible for creating the deck. If "1" is passed , then the player 1 deck is created, 
+	 * else if 2, the player 2 deck is created
+	 * @param deckNumber represents the deck that is created 
+    */
 	public void createDeck(String deckNumber) {
 		List<Card> cards = null;
 
@@ -59,6 +54,12 @@ public class Deck {
 		}
 	}
 
+	/**
+     * This method is responsible for creating CardWrappers from a Card, 
+	 * if it is a creature, a UnitCard is created, else a SpellCard is created
+	 * @card the card created from the OrderedCardLoader
+	 * @isCreature is the card is a creature card
+    */
 	private void createCardWrapper(Card card, boolean isCreature) {
 		if (isCreature) {
 			int attack = card.bigCard.getAttack();
@@ -77,9 +78,10 @@ public class Deck {
 		}
 	}
 
-	// This method has to check the rulesTextRows and depending on the ability
-	// information
-	// generate the correct UnitAbility to return
+	/**
+     * This helper method is responsible for creating a UnitAbility from the card
+	 * @card a reference to a card
+    */
 	private UnitAbility createUnitAbility(Card card) {
 		String[] rulesTextRows = card.bigCard.rulesTextRows;
 		UnitAbility ability = null;
@@ -88,7 +90,12 @@ public class Deck {
 		}
 		return ability;
 	}
-	
+
+	/**
+     * This method is responsible for returning the correct UnitAbility depending on the Cards name
+	 * @name the name of the card
+	 * @return the appropriate UnitAbility depending on the card name
+    */
 	private UnitAbility getUnitAbility(String name) {
 		UnitAbility ability = null;
 		if (name.equals("Bad Omen")) {
@@ -112,9 +119,11 @@ public class Deck {
 
 	}
 
-	// This method has to check the rulesTextRows and depending on the ability
-	// information
-	// generate the correct SpellAbility to return
+	/**
+     * This helper method is responsible for creating a SpellAbility from a card
+	 * @card a reference to a card
+	 * @return an appropriate SpellAbility dependning on the Card name
+    */
 	private SpellAbility createSpellAbility(Card card) {
 		String[] rulesTextRows = card.bigCard.rulesTextRows;
 		SpellAbility ability = null;
@@ -124,6 +133,10 @@ public class Deck {
 		return ability;
 	}
 
+	/**
+     * This method gets the correct SpellAbility depending on the SpellCard name
+	 * @card a SpellAbility depending on the card name
+    */
 	private SpellAbility getSpellAbility(String name) {
 		SpellAbility ability = null;
 		if (name.equals("Dark Terminus")) {
@@ -142,7 +155,10 @@ public class Deck {
 			
 		return null;
 	}
-
+	/**
+     * This method returns the top card in the deck
+	 * @return a CardWrapper representing the top card in the deck
+    */
 	public CardWrapper getTopCard() {
 		CardWrapper cardWrapper = null;
 

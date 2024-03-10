@@ -2,6 +2,12 @@ package structures.basic;
 
 import abilities.UnitAbility;
 
+/**
+ * This class represents a UnitCard which extends the CardWrapper.
+ * It has variables for attack, health and a UnitAbility
+ * @author Rajib Malik
+*/
+
 public class UnitCard extends CardWrapper{
     private int attack;
     private int health;

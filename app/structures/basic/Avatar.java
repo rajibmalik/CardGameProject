@@ -2,7 +2,15 @@ package structures.basic;
 
 import abilities.UnitAbility;
 
-// This class represents the player avatar and extends the UnitWrapper class
+/**
+ * Represents a player's avatar, which extends from UnitWrapper.
+ * The Avatar's health represents the players health. 
+ * Additionally, an avatar can have robustness which relates to the 
+ * SpellCard Horn of the Forsaken
+ * 
+ * @author Rajib Malik
+ * @author Ashling Curran
+*/
 
 public class Avatar extends UnitWrapper {
 	private int robustness;
@@ -10,11 +18,12 @@ public class Avatar extends UnitWrapper {
 
 	public Avatar(Unit unit, String name, int health, int attack, Player player, UnitAbility ability,
 			TileWrapper tile) {
-		super(unit, name, 20, 2, player, ability, tile); // Player avatar is initialised with 20 health and 2 attack
+		super(unit, name, 20, 2, player, ability, tile); // Player avatar is initialised with 2 health and attack
 		this.robustness = 0;
 		this.artifactActive = false;
 	}
 
+	
 	public boolean isArtifactActive() {
 		return artifactActive;
 	}
@@ -31,6 +40,10 @@ public class Avatar extends UnitWrapper {
 		this.robustness = robustness;
 	}
 
+	/**
+     * Decreases the Avatar's robustness. If the robustness reaches 0,
+ 	 * the artifact is set to inactive.
+    */
 	public void decreaseRobustness() {
 		this.robustness--;
 
@@ -38,4 +51,5 @@ public class Avatar extends UnitWrapper {
 			setArtifactActive(false);
 		}
 	}
+
 }
