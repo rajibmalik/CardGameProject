@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import abilities.Deathwatch;
 import abilities.HornOfTheForsaken;
 import abilities.UnitAbility;
 import abilities.Zeal;
@@ -24,13 +23,22 @@ import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
 import utils.TileLocator;
 
+/**
+ * The UnitController class handles the logic for units' actions and interactions during the game.
+ * This includes rendering units, moving units, attacking units, and unit-specific abilities.
+ * 
+ * This class requires the following parameters:
+ * - out: a reference to the actor for frontend communication
+ * - gameState: the current state of the game
+ * 
+ * @author Rajib Malik
+ * @author Darby Christy
+ */
 public class UnitController {
 
 	public UnitController() {
 	}
-
-	// creates a Unit object from the config
-	public static Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
+		public static Unit renderUnit(ActorRef out, UnitCard unitCard, Tile tile) {
 		String config = unitCard.getCard().getUnitConfig();
 
 		Unit unit = BasicObjectBuilders.loadUnit(config, UnitWrapper.nextId, Unit.class);
@@ -54,6 +62,13 @@ public class UnitController {
 		return unit;
 	}
 
+	 /**
+     * Renders the AI player's avatar unit on the specified tile,
+     * on the game board at the beginning of the game.
+     * 
+     * @return The rendered AI player's avatar Unit object.
+     */
+
 	public static Unit renderAIAvatar(ActorRef out, GameState gameState) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		Tile tile = board[7][2].getTile();
@@ -71,6 +86,12 @@ public class UnitController {
 		return unit;
 	}
 
+	/**
+     * Renders the human player's avatar unit on the specified tile,
+     * on the game board at the beginning of the game.
+     * 
+     * @return The rendered human player's avatar Unit object.
+     */
 	public static Unit renderPlayerAvatar(ActorRef out, GameState gameState) {
 		TileWrapper[][] board = gameState.getBoard().getBoard();
 		Tile tile = board[1][2].getTile();
@@ -88,7 +109,14 @@ public class UnitController {
 		return unit;
 	}
 
-	// creates a backend UnitWrapper object
+	 /**
+     * Creates a UnitWrapper object and adds it to the player's list of units.
+     * 
+     * @param unit          The backend Unit object to be wrapped.
+     * @param unitCard      The UnitCard containing unit information.
+     * @param tileWrapper   The TileWrapper representing the unit's position.
+     * @param player        The Player object owning the unit.
+     */
 	public static void createUnitWrapper(Unit unit, UnitCard unitCard, TileWrapper tileWrapper, Player player) {
 		String name = unitCard.getName();
 		int health = unitCard.getHealth();
@@ -176,8 +204,15 @@ public class UnitController {
 			}
 		}
 	}
-	
-	//move and attack logic 
+
+	/**
+     * Handles the logic when a tile is clicked to initiate an attack or movement and attack.
+     * 
+     * If the clicked tile is within attack range, the unit will attack the enemy unit on that tile.
+     * If the clicked tile is not within attack range, but is within movement range, the unit will move to that tile and then attack.
+     * 
+     * @param tileWrapper   The TileWrapper representing the clicked tile.
+     */
 	public static void handleTileClickAttack(ActorRef out, GameState gameState, TileWrapper tileWrapper) {
 		List<TileWrapper> tiles = TileLocator.getAdjacentTiles(gameState.getBoard().getBoard(), gameState.getClickedUnit(gameState));
 		UnitWrapper attackingUnitWrapper = gameState.getClickedUnit(gameState);
@@ -210,7 +245,14 @@ public class UnitController {
 		}
 	}
 
-	// logic for carrying out an attack on the front and backend, uses various helper classes
+	/**
+     * Handles the attack logic between two units, including both backend and frontend actions.
+     * 
+     * If the attacked unit dies as a result of the attack, it will be removed from the game.
+     * 
+     * @param attackingUnitWrapper   The attacking unit.
+     * @param unitWrapperAttacked    The unit being attacked.
+     */
 	public static void attackUnit(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper,
 			UnitWrapper unitWrapperAttacked) {
 		Player currentPlayer = gameState.getCurrentPlayer();
@@ -242,7 +284,12 @@ public class UnitController {
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 
-	// checks and applies zeal if applicable
+	/**
+     * Applies the Zeal ability to friendly units if applicable after an attack.
+     * 
+     * @param attackingUnit    The unit initiating the attack.
+     * @param attackedUnit     The unit being attacked.
+     */
 	private static void applyZeal(ActorRef out, GameState gameState, UnitWrapper attackingUnit, UnitWrapper attackedUnit) {
 		ArrayList<UnitWrapper> units = gameState.getAIPlayer().getUnits();
 
@@ -266,13 +313,21 @@ public class UnitController {
 		}
 	}
 
+	 /**
+     * Unclicks all units by setting their "hasBeenClicked" flag to false.
+     */
 	private static void unclickAllUnits(GameState gameState) {
 		for (UnitWrapper unit : gameState.getCurrentPlayer().getUnits()) {
 			unit.setHasBeenClicked(false);
 		}
 	}
 
-	// logic for carrying out an attack on the backend
+	 /**
+     * Updates the backend state after an attack between two units.
+     * 
+     * @param attackingUnitWrapper   The unit initiating the attack.
+     * @param unitWrapperAttacked     The unit being attacked.
+     */
 	public static void attackUnitBackend(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper,
 			UnitWrapper unitWrapperAttacked) {attackingUnitWrapper.setHasAttacked(true);
    			unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
@@ -286,7 +341,12 @@ public class UnitController {
 		}
 	}
 
-	// same as normal attack, expect "has attacked" won't be set to true so player can attack on next turn
+	 /**
+     * Updates the backend state after a counter-attack from the attacked unit.
+     * 
+     * @param attackingUnitWrapper    The unit initiating the counter-attack.
+     * @param unitWrapperAttacked     The unit that originally initiated the attack.
+     */
 	public static void counterAttackUnitBackend(ActorRef out, GameState gameState, UnitWrapper attackingUnitWrapper, UnitWrapper unitWrapperAttacked) {
 		unitWrapperAttacked.decreaseHealth(attackingUnitWrapper.getAttack());
 		
@@ -300,7 +360,13 @@ public class UnitController {
 
 	}
 
-	// logic for carrying out an attack on the frontend
+	/**
+     * Executes the frontend animations and updates after an attack between two units.
+     * 
+     * @param attackingUnit           The unit initiating the attack.
+     * @param unitAttacked            The unit being attacked.
+     * @param unitWrapperAttacked     The backend representation of the unit being attacked.
+     */
 	public static void attackUnitFrontEnd(ActorRef out, GameState gameState, UnitWrapper attackingUnit, UnitWrapper unitAttacked,
 			UnitWrapper unitWrapperAttacked) {
 
@@ -319,11 +385,23 @@ public class UnitController {
 
 	}
 
+	 /**
+     * Handles the backend logic for a unit's death, including updating the game state and player lists.
+     * 
+     * @param currentPlayer    The player to whom the unit belongs.
+     * @param unitDying        The unit that is dying.
+     */
 	public static void unitDeathBackend(ActorRef out, GameState gameState, Player currentPlayer, UnitWrapper unitDying) {
 		unitDealth(gameState, unitDying);
+		
 		PlayerController.applyDeathWatch(out, gameState);
 	}
 
+	 /**
+     * Handles the backend logic for a unit's death, including removing it from the game state and player lists.
+     * 
+     * @param unitWrapper  The unit that is dying.
+     */
 	public static void unitDealth(GameState gameState, UnitWrapper unitWrapper) {
 		if (unitWrapper.getHealth() < 1) {
 			unitWrapper.getTile().setHasUnit(false);
@@ -332,8 +410,12 @@ public class UnitController {
 			removeUnit(gameState, unitWrapper);
 		}
 	}
-
-	// removes a unit from a Players list of UnitWrappers
+	
+ 	 /**
+     *  removes a unit from a Players list of UnitWrappers
+     * 
+     * @param unitWrapper  The unit that is being removed
+     */
 	public static void removeUnit(GameState gameState, UnitWrapper unitWrapper) {
 	    // Look for dead unit in human unit list
 	    Iterator<UnitWrapper> humanIterator = gameState.getHumanPlayer().getUnits().iterator();
@@ -372,7 +454,12 @@ public class UnitController {
 	    }
 	}
 
-
+	/**
+     * Handles the frontend visual effects and removal of a unit upon its death.
+     * 
+     * @param currentPlayer The player whose unit is dying.
+     * @param unitDying     The unit that is dying.
+     */
 	public static void unitDeathFrontEnd(ActorRef out, Player currentPlayer, UnitWrapper unitDying) {
 		BasicCommands.playUnitAnimation(out, unitDying.getUnit(), UnitAnimationType.death);
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -381,6 +468,10 @@ public class UnitController {
 		
 	}
 
+	 /**
+     * Updates the health of players based on their avatars' health, and checks for
+     * victory or defeat conditions.
+     */
 	private static void updatePlayerHealth(ActorRef out, GameState gameState) {
 		// Find human avatar and update player health to match
 		for (UnitWrapper unit : gameState.getHumanPlayer().getUnits()) {
@@ -416,7 +507,11 @@ public class UnitController {
 		}
 	}
 	
-	//Destory's a unit belonging to the AI player 
+	 /**
+     * Destroys a unit belonging to the AI player.
+     * 
+     * @param targetTile  The TileWrapper containing the unit to be destroyed.
+     */
 	public static void destroyHumanPlayerEnemy(ActorRef out, GameState gameState, TileWrapper targetTile) {
 		Player aiPlayer = gameState.getAIPlayer();
 		UnitWrapper unitDying = targetTile.getUnit();
@@ -426,7 +521,12 @@ public class UnitController {
 		UnitController.unitDeathFrontEnd( out,  aiPlayer,  unitDying);
 	}
 
-	
+	 /**
+     * Moves a unit to a new tile.
+     * 
+     * @param unitWrapper  The UnitWrapper representing the unit to be moved.
+     * @param tileWrapper  The target TileWrapper representing the destination tile.
+     */
 	public static void moveUnit(ActorRef out, GameState gameState, UnitWrapper unitWrapper, TileWrapper tileWrapper) {
 		Tile tile = tileWrapper.getTile();
 		moveUnitBackend(unitWrapper, tileWrapper);
@@ -435,6 +535,12 @@ public class UnitController {
 		gameState.unclickAllUnits(gameState);
 	}
 
+	/**
+     * Moves a unit to a new tile on the backend.
+     * 
+     * @param unitWrapper  The UnitWrapper representing the unit to be moved.
+     * @param targetTile   The TileWrapper representing the target tile to move the unit to.
+     */
 	public static void moveUnitBackend(UnitWrapper unitWrapper, TileWrapper targetTile) {
 		TileWrapper oldTile = unitWrapper.getTile();
 
@@ -450,12 +556,25 @@ public class UnitController {
 
 	}
 
+	/**
+	 * Moves a game unit to a specified tile on the game board and plays the unit's movement animation.
+	 * This method is intended to be used as part of the game's frontend logic to visually represent unit movement.
+	 * 
+	 * @param unitWrapper An object that encapsulates the game unit to be moved. The actual {@code Unit} object is retrieved from this wrapper.
+	 * @param tile An object that represents the destination tile on the game board to which the unit will be moved.
+	*/
 	public static void moveUnitFrontend(ActorRef out, UnitWrapper unitWrapper, Tile tile) {
 		Unit unit = unitWrapper.getUnit();
 		BasicCommands.moveUnitToTile(out, unit, tile);
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
 	}
 
+	/**
+	 * Increases the attack value of a game unit by a specified amount and updates the frontend.
+	 * 
+	 * @param unit unit to increase the attack of
+	 * @param i The amount to increase the unit's attack by.
+	 */
 	public static void increaseAttack(ActorRef out, UnitWrapper unit, int i) {
 		if(unit!=null) {
 			unit.setAttack(unit.getAttack() + i);
@@ -463,25 +582,39 @@ public class UnitController {
 		}
 	}
 	
+	/**
+	 * Updates the frontend to reflect the current attack value of a game unit.
+	 * 
+	 * @param unit The UnitWRapper containing the game unit whose attack value has been updated.
+	 */
 	public static void increaseAttackFrontend(ActorRef out, UnitWrapper unit) {
 		int attack = unit.getAttack();
 		BasicCommands.setUnitAttack(out, unit.getUnit(), attack);
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-		
 	}
 
+	/**
+	 * Increases the health value of a specified game unit by a given amount and updates the frontend to reflect the change.
+	 * 
+	 * @param unit A UniWrapper containing the game unit whose health is to be increased.
+	 * @param i The amount to adjust the unit's health by
+	 */
 	public static void increaseHealth(ActorRef out, UnitWrapper unit, int i) {
 		if(unit!=null) {
 			unit.setHealth(unit.getHealth() + i);
 			increaseHealthFrontend(out,unit);
 		}
-		
 	}
 	
+	
+	/**
+	 * Updates the frontend to display the current health value of a specified game unit.
+	 * 
+	 * @param unit The UnitWrapper containing the game unit whose health has been updated.
+	 */
 	public static void increaseHealthFrontend(ActorRef out, UnitWrapper unit) {
 		int health = unit.getHealth();
 		BasicCommands.setUnitHealth(out, unit.getUnit(), health);
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-		
 	}
 }
