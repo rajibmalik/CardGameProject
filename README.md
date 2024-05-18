@@ -11,6 +11,7 @@ This University project is an online tactical card game that combines card-game 
 ## Technologies Used
 - Java for back-end development
 - JavaScript for front end development (provided)
+- Java WebSocket for real-time communication between the server and the browser
 
 ## Development Process
 
