@@ -25,7 +25,7 @@ This University project is an online tactical card game that combines card-game 
   - Development in Java, following the agile Scrum methododology
   - Weekly development Sprints
   - Sprint reports created for each week
-  - Sprint reports included in the repository
+  - Sprint reports included in the repository (see `sprint-reports` folder)
   
 ### My Role 
 - **Team Role:** Lead Developer, Scrum Leader, Product Owner
