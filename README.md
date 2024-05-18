@@ -16,16 +16,16 @@ This University project is an online tactical card game that combines card-game 
 
 ### Part 1: Requirements Capture & System Design (2 weeks)
 - **Deliverables:**
-  -Set of story cards
-    -Final story cards included in the repository
-  -Class description document
+  - Set of story cards
+  - Final story cards included in the repository
+  - Class description document
 
 ### Part 2: Development (5 weeks)
--**Development Cycle:**
-  -Development in Java, following the agile Scrum methododology
-  -Weekly development Sprints
-  -Sprint reports created for each week
-    -Sprint reports included in the repository
+- **Development Cycle:**
+  - Development in Java, following the agile Scrum methododology
+  - Weekly development Sprints
+  - Sprint reports created for each week
+  - Sprint reports included in the repository
   
 ### My Role 
 - **Team Role:** Lead Developer, Scrum Leader, Product Owner
